@@ -198,13 +198,13 @@ EXPORT_SYMBOL(loops_per_jiffy);
 
 static int __init debug_kernel(char *str)
 {
-	console_loglevel = 10;
+	console_loglevel = 0;
 	return 0;
 }
 
 static int __init quiet_kernel(char *str)
 {
-	console_loglevel = 4;
+	console_loglevel = 0;
 	return 0;
 }
 
@@ -640,8 +640,6 @@ asmlinkage void __init start_kernel(void)
 
 	acpi_early_init(); /* before LAPIC and SMP init */
 	sfi_init_late();
-
-	ftrace_init();
 
 	/* Do the rest non-__init'ed, we're now alive */
 	//printk(KERN_INFO "[mjdbg]MEM Check4:0x%x : 0x%x.\n", (int *)(phys_to_virt(0x50000000)),*(int *)(phys_to_virt(0x50000000)));
