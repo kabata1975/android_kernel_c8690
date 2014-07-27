@@ -1,7 +1,7 @@
 /*
  * From FreeBSD 2.2.7: Fundamental constants relating to ethernet.
  *
- * Copyright (C) 1999-2012, Broadcom Corporation
+ * Copyright (C) 1999-2014, Broadcom Corporation
  * 
  *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -21,10 +21,14 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: ethernet.h 309193 2012-01-19 00:03:57Z $
+ * $Id: ethernet.h 403353 2013-05-20 14:05:33Z $
  */
 
+<<<<<<< HEAD
 #ifndef _NET_ETHERNET_H_	    /* use native BSD ethernet.h when available */
+=======
+#ifndef _NET_ETHERNET_H_	/* use native BSD ethernet.h when available */
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #define _NET_ETHERNET_H_
 
 #ifndef _TYPEDEFS_H_
@@ -83,6 +87,7 @@
 #define	ETHER_TYPE_IPV6		0x86dd		/* IPv6 */
 #define	ETHER_TYPE_BRCM		0x886c		/* Broadcom Corp. */
 #define	ETHER_TYPE_802_1X	0x888e		/* 802.1x */
+<<<<<<< HEAD
 #define	ETHER_TYPE_802_1X_PREAUTH 0x88c7	/* 802.1x preauthentication */
 #define ETHER_TYPE_WAI		0x88b4		/* WAI */
 #define ETHER_TYPE_89_0D	0x890d		/* 89-0d frame for TDLS */
@@ -97,6 +102,29 @@
 #define ETHER_SRC_OFFSET	(1 * ETHER_ADDR_LEN)	/* src address offset */
 #define ETHER_TYPE_OFFSET	(2 * ETHER_ADDR_LEN)	/* ether type offset */
 
+=======
+#ifdef PLC
+#define	ETHER_TYPE_88E1		0x88e1		/* GIGLE */
+#define	ETHER_TYPE_8912		0x8912		/* GIGLE */
+#define ETHER_TYPE_GIGLED	0xffff		/* GIGLE */
+#endif /* PLC */
+#define	ETHER_TYPE_802_1X_PREAUTH 0x88c7	/* 802.1x preauthentication */
+#define ETHER_TYPE_WAI		0x88b4		/* WAI */
+#define ETHER_TYPE_89_0D	0x890d		/* 89-0d frame for TDLS */
+
+#define ETHER_TYPE_PPP_SES	0x8864		/* PPPoE Session */
+
+#define ETHER_TYPE_IAPP_L2_UPDATE	0x6	/* IAPP L2 update frame */
+
+/* Broadcom subtype follows ethertype;  First 2 bytes are reserved; Next 2 are subtype; */
+#define	ETHER_BRCM_SUBTYPE_LEN	4	/* Broadcom 4 byte subtype */
+
+/* ether header */
+#define ETHER_DEST_OFFSET	(0 * ETHER_ADDR_LEN)	/* dest address offset */
+#define ETHER_SRC_OFFSET	(1 * ETHER_ADDR_LEN)	/* src address offset */
+#define ETHER_TYPE_OFFSET	(2 * ETHER_ADDR_LEN)	/* ether type offset */
+
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 /*
  * A macro to validate a length with
  */
@@ -112,7 +140,11 @@
 		((uint8 *)ea)[5] = ((mgrp_ip) >>  0) & 0xff;	\
 }
 
+<<<<<<< HEAD
 #ifndef __INCif_etherh     /* Quick and ugly hack for VxWorks */
+=======
+#ifndef __INCif_etherh /* Quick and ugly hack for VxWorks */
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 /*
  * Structure of a 10Mb/s Ethernet header.
  */
@@ -150,6 +182,7 @@ BWL_PRE_PACKED_STRUCT struct	ether_addr {
 
 
 /* compare two ethernet addresses - assumes the pointers can be referenced as shorts */
+<<<<<<< HEAD
 #define	ether_cmp(a, b)	(!(((short*)(a))[0] == ((short*)(b))[0]) | \
 			 !(((short*)(a))[1] == ((short*)(b))[1]) | \
 			 !(((short*)(a))[2] == ((short*)(b))[2]))
@@ -159,23 +192,55 @@ BWL_PRE_PACKED_STRUCT struct	ether_addr {
 		((short*)(d))[0] = ((const short*)(s))[0]; \
 		((short*)(d))[1] = ((const short*)(s))[1]; \
 		((short*)(d))[2] = ((const short*)(s))[2]; }
+=======
+#define eacmp(a, b)	((((const uint16 *)(a))[0] ^ ((const uint16 *)(b))[0]) | \
+	                 (((const uint16 *)(a))[1] ^ ((const uint16 *)(b))[1]) | \
+	                 (((const uint16 *)(a))[2] ^ ((const uint16 *)(b))[2]))
+
+#define	ether_cmp(a, b)	eacmp(a, b)
+
+/* copy an ethernet address - assumes the pointers can be referenced as shorts */
+#define eacopy(s, d) \
+do { \
+	((uint16 *)(d))[0] = ((const uint16 *)(s))[0]; \
+	((uint16 *)(d))[1] = ((const uint16 *)(s))[1]; \
+	((uint16 *)(d))[2] = ((const uint16 *)(s))[2]; \
+} while (0)
+
+#define	ether_copy(s, d) eacopy(s, d)
+
+/* Copy an ethernet address in reverse order */
+#define	ether_rcopy(s, d) \
+do { \
+	((uint16 *)(d))[2] = ((uint16 *)(s))[2]; \
+	((uint16 *)(d))[1] = ((uint16 *)(s))[1]; \
+	((uint16 *)(d))[0] = ((uint16 *)(s))[0]; \
+} while (0)
+
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 
 static const struct ether_addr ether_bcast = {{255, 255, 255, 255, 255, 255}};
 static const struct ether_addr ether_null = {{0, 0, 0, 0, 0, 0}};
+static const struct ether_addr ether_ipv6_mcast = {{0x33, 0x33, 0x00, 0x00, 0x00, 0x01}};
 
-#define ETHER_ISBCAST(ea)	((((uint8 *)(ea))[0] &		\
-	                          ((uint8 *)(ea))[1] &		\
-				  ((uint8 *)(ea))[2] &		\
-				  ((uint8 *)(ea))[3] &		\
-				  ((uint8 *)(ea))[4] &		\
-				  ((uint8 *)(ea))[5]) == 0xff)
-#define ETHER_ISNULLADDR(ea)	((((uint8 *)(ea))[0] |		\
-				  ((uint8 *)(ea))[1] |		\
-				  ((uint8 *)(ea))[2] |		\
-				  ((uint8 *)(ea))[3] |		\
-				  ((uint8 *)(ea))[4] |		\
-				  ((uint8 *)(ea))[5]) == 0)
+#define ETHER_ISBCAST(ea)	((((const uint8 *)(ea))[0] &		\
+	                          ((const uint8 *)(ea))[1] &		\
+				  ((const uint8 *)(ea))[2] &		\
+				  ((const uint8 *)(ea))[3] &		\
+				  ((const uint8 *)(ea))[4] &		\
+				  ((const uint8 *)(ea))[5]) == 0xff)
+#define ETHER_ISNULLADDR(ea)	((((const uint8 *)(ea))[0] |		\
+				  ((const uint8 *)(ea))[1] |		\
+				  ((const uint8 *)(ea))[2] |		\
+				  ((const uint8 *)(ea))[3] |		\
+				  ((const uint8 *)(ea))[4] |		\
+				  ((const uint8 *)(ea))[5]) == 0)
+
+#define ETHER_ISNULLDEST(da)	((((const uint16 *)(da))[0] |           \
+				  ((const uint16 *)(da))[1] |           \
+				  ((const uint16 *)(da))[2]) == 0)
+#define ETHER_ISNULLSRC(sa)	ETHER_ISNULLDEST(sa)
 
 #define ETHER_MOVE_HDR(d, s) \
 do { \
@@ -184,6 +249,11 @@ do { \
 	*(struct ether_header *)(d) = t; \
 } while (0)
 
+<<<<<<< HEAD
+=======
+#define  ETHER_ISUCAST(ea) ((((uint8 *)(ea))[0] & 0x01) == 0)
+
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 /* This marks the end of a packed structure section. */
 #include <packed_section_end.h>
 

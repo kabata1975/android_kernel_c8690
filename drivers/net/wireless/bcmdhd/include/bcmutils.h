@@ -1,7 +1,7 @@
 /*
  * Misc useful os-independent macros and functions.
  *
- * Copyright (C) 1999-2012, Broadcom Corporation
+ * Copyright (C) 1999-2014, Broadcom Corporation
  * 
  *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -21,7 +21,11 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
+<<<<<<< HEAD
  * $Id: bcmutils.h 354837 2012-09-04 06:58:44Z $
+=======
+ * $Id: bcmutils.h 434656 2013-11-07 01:11:33Z $
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
  */
 
 #ifndef	_bcmutils_h_
@@ -83,6 +87,18 @@ struct bcmstrbuf {
 #include <osl.h>
 
 #define GPIO_PIN_NOTDEFINED 	0x20	/* Pin not defined */
+<<<<<<< HEAD
+=======
+
+/*
+ * Spin at most 'us' microseconds while 'exp' is true.
+ * Caller should explicitly test 'exp' when this completes
+ * and take appropriate error action if 'exp' is still true.
+ */
+#ifndef SPINWAIT_POLL_PERIOD
+#define SPINWAIT_POLL_PERIOD	10
+#endif
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 /*
  * Spin at most 'us' microseconds while 'exp' is true.
@@ -90,14 +106,18 @@ struct bcmstrbuf {
  * and take appropriate error action if 'exp' is still true.
  */
 #define SPINWAIT(exp, us) { \
-	uint countdown = (us) + 9; \
-	while ((exp) && (countdown >= 10)) {\
-		OSL_DELAY(10); \
-		countdown -= 10; \
+	uint countdown = (us) + (SPINWAIT_POLL_PERIOD - 1); \
+	while ((exp) && (countdown >= SPINWAIT_POLL_PERIOD)) { \
+		OSL_DELAY(SPINWAIT_POLL_PERIOD); \
+		countdown -= SPINWAIT_POLL_PERIOD; \
 	} \
 }
 
 /* osl multi-precedence packet queue */
+<<<<<<< HEAD
+=======
+#define PKTQ_LEN_MAX            0xFFFF  /* Max uint16 65535 packets */
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #ifndef PKTQ_LEN_DEFAULT
 #define PKTQ_LEN_DEFAULT        128	/* Max 128 packets */
 #endif
@@ -132,6 +152,10 @@ typedef struct {
 	uint32 busy;         /* packets droped because of hardware/transmission error */
 	uint32 retry;        /* packets re-sent because they were not received */
 	uint32 ps_retry;     /* packets retried again prior to moving power save mode */
+<<<<<<< HEAD
+=======
+	uint32 suppress;     /* packets which were suppressed and not transmitted */
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 	uint32 retry_drop;   /* packets finally dropped after retry limit */
 	uint32 max_avail;    /* the high-water mark of the queue capacity for packets -
 	                            goes to zero as queue fills
@@ -140,10 +164,30 @@ typedef struct {
 						        increases with use ('inverse' of max_avail)
 				          */
 	uint32 queue_capacity; /* the maximum capacity of the queue */
+<<<<<<< HEAD
 } pktq_counters_t;
 #endif /* PKTQ_LOG */
+=======
+	uint32 rtsfail;        /* count of rts attempts that failed to receive cts */
+	uint32 acked;          /* count of packets sent (acked) successfully */
+	uint32 txrate_succ;    /* running total of phy rate of packets sent successfully */
+	uint32 txrate_main;    /* running totoal of primary phy rate of all packets */
+	uint32 throughput;     /* actual data transferred successfully */
+	uint32 airtime;        /* cumulative total medium access delay in useconds */
+	uint32  _logtime;      /* timestamp of last counter clear  */
+} pktq_counters_t;
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
+typedef struct {
+	uint32                  _prec_log;
+	pktq_counters_t*        _prec_cnt[PKTQ_MAX_PREC];     /* Counters per queue  */
+} pktq_log_t;
+#endif /* PKTQ_LOG */
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #define PKTQ_COMMON	\
 	uint16 num_prec;        /* number of precedences in use */			\
 	uint16 hi_prec;         /* rapid dequeue hint (>= highest non-empty prec) */	\
@@ -156,7 +200,11 @@ struct pktq {
 	/* q array must be last since # of elements can be either PKTQ_MAX_PREC or 1 */
 	struct pktq_prec q[PKTQ_MAX_PREC];
 #ifdef PKTQ_LOG
+<<<<<<< HEAD
 	pktq_counters_t	_prec_cnt[PKTQ_MAX_PREC];		/* Counters per queue  */
+=======
+	pktq_log_t*      pktqlog;
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #endif
 };
 
@@ -175,10 +223,23 @@ typedef bool (*ifpkt_cb_t)(void*, int);
 #ifdef BCMPKTPOOL
 #define POOL_ENAB(pool)		((pool) && (pool)->inited)
 #define SHARED_POOL		(pktpool_shared)
+<<<<<<< HEAD
+=======
+#endif /* BCM4329C0 */
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #else /* BCMPKTPOOL */
 #define POOL_ENAB(bus)		0
 #define SHARED_POOL		((struct pktpool *)NULL)
 #endif /* BCMPKTPOOL */
+<<<<<<< HEAD
+=======
+
+#ifdef BCMFRAGPOOL
+#define SHARED_FRAG_POOL	(pktpool_shared_lfrag)
+#endif
+#define SHARED_RXFRAG_POOL	(pktpool_shared_rxlfrag)
+
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 #ifndef PKTPOOL_LEN_MAX
 #define PKTPOOL_LEN_MAX		40
@@ -191,7 +252,17 @@ typedef struct {
 	pktpool_cb_t cb;
 	void *arg;
 } pktpool_cbinfo_t;
+/* call back fn extension to populate host address in pool pkt */
+typedef int (*pktpool_cb_extn_t)(struct pktpool *pool, void *arg, void* pkt);
+typedef struct {
+	pktpool_cb_extn_t cb;
+	void *arg;
+} pktpool_cbextn_info_t;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #ifdef BCMDBG_POOL
 /* pkt pool debug states */
 #define POOL_IDLE	0
@@ -221,13 +292,17 @@ typedef struct {
 #endif /* BCMDBG_POOL */
 
 typedef struct pktpool {
-	bool inited;
-	uint16 r;
-	uint16 w;
-	uint16 len;
-	uint16 maxlen;
-	uint16 plen;
-	bool istx;
+	bool inited;            /* pktpool_init was successful */
+	uint8 type;             /* type of lbuf: basic, frag, etc */
+	uint8 id;               /* pktpool ID:  index in registry */
+	bool istx;              /* direction: transmit or receive data path */
+
+	void * freelist;        /* free list: see PKTNEXTFREE(), PKTSETNEXTFREE() */
+	uint16 avail;           /* number of packets in pool's free list */
+	uint16 len;             /* number of packets managed by pool */
+	uint16 maxlen;          /* maximum size of pool <= PKTPOOL_LEN_MAX */
+	uint16 plen;            /* size of pkt buffer, excluding lbuf|lbuf_frag */
+
 	bool empty;
 	uint8 cbtoggle;
 	uint8 cbcnt;
@@ -236,8 +311,7 @@ typedef struct pktpool {
 	pktpool_cbinfo_t *availcb_excl;
 	pktpool_cbinfo_t cbs[PKTPOOL_CB_MAX];
 	pktpool_cbinfo_t ecbs[PKTPOOL_CB_MAX];
-	void *q[PKTPOOL_LEN_MAX + 1];
-
+	pktpool_cbextn_info_t cbext;
 #ifdef BCMDBG_POOL
 	uint8 dbg_cbcnt;
 	pktpool_cbinfo_t dbg_cbs[PKTPOOL_CB_MAX];
@@ -247,14 +321,25 @@ typedef struct pktpool {
 } pktpool_t;
 
 extern pktpool_t *pktpool_shared;
+<<<<<<< HEAD
+=======
+#ifdef BCMFRAGPOOL
+extern pktpool_t *pktpool_shared_lfrag;
+#endif
+extern pktpool_t *pktpool_shared_rxlfrag;
+#endif /* BCM4329C0 */
 
-extern int pktpool_init(osl_t *osh, pktpool_t *pktp, int *pktplen, int plen, bool istx);
+/* Incarnate a pktpool registry. On success returns total_pools. */
+extern int pktpool_attach(osl_t *osh, uint32 total_pools);
+extern int pktpool_dettach(osl_t *osh); /* Relinquish registry */
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
+
+extern int pktpool_init(osl_t *osh, pktpool_t *pktp, int *pktplen, int plen, bool istx, uint8 type);
 extern int pktpool_deinit(osl_t *osh, pktpool_t *pktp);
 extern int pktpool_fill(osl_t *osh, pktpool_t *pktp, bool minimal);
 extern void* pktpool_get(pktpool_t *pktp);
 extern void pktpool_free(pktpool_t *pktp, void *p);
 extern int pktpool_add(pktpool_t *pktp, void *p);
-extern uint16 pktpool_avail(pktpool_t *pktp);
 extern int pktpool_avail_notify_normal(osl_t *osh, pktpool_t *pktp);
 extern int pktpool_avail_notify_exclusive(osl_t *osh, pktpool_t *pktp, pktpool_cb_t cb);
 extern int pktpool_avail_register(pktpool_t *pktp, pktpool_cb_t cb, void *arg);
@@ -263,11 +348,41 @@ extern int pktpool_setmaxlen(pktpool_t *pktp, uint16 maxlen);
 extern int pktpool_setmaxlen_strict(osl_t *osh, pktpool_t *pktp, uint16 maxlen);
 extern void pktpool_emptycb_disable(pktpool_t *pktp, bool disable);
 extern bool pktpool_emptycb_disabled(pktpool_t *pktp);
+int pktpool_hostaddr_fill_register(pktpool_t *pktp, pktpool_cb_extn_t cb, void *arg);
+#define POOLPTR(pp)         ((pktpool_t *)(pp))
+#define POOLID(pp)          (POOLPTR(pp)->id)
 
-#define POOLPTR(pp)			((pktpool_t *)(pp))
-#define pktpool_len(pp)			(POOLPTR(pp)->len - 1)
-#define pktpool_plen(pp)		(POOLPTR(pp)->plen)
-#define pktpool_maxlen(pp)		(POOLPTR(pp)->maxlen)
+#define POOLSETID(pp, ppid) (POOLPTR(pp)->id = (ppid))
+
+#define pktpool_len(pp)     (POOLPTR(pp)->len)
+#define pktpool_avail(pp)   (POOLPTR(pp)->avail)
+#define pktpool_plen(pp)    (POOLPTR(pp)->plen)
+#define pktpool_maxlen(pp)  (POOLPTR(pp)->maxlen)
+
+
+/*
+ * ----------------------------------------------------------------------------
+ * A pool ID is assigned with a pkt pool during pool initialization. This is
+ * done by maintaining a registry of all initialized pools, and the registry
+ * index at which the pool is registered is used as the pool's unique ID.
+ * ID 0 is reserved and is used to signify an invalid pool ID.
+ * All packets henceforth allocated from a pool will be tagged with the pool's
+ * unique ID. Packets allocated from the heap will use the reserved ID = 0.
+ * Packets with non-zero pool id signify that they were allocated from a pool.
+ * A maximum of 15 pools are supported, allowing a 4bit pool ID to be used
+ * in place of a 32bit pool pointer in each packet.
+ * ----------------------------------------------------------------------------
+ */
+#define PKTPOOL_INVALID_ID          (0)
+#define PKTPOOL_MAXIMUM_ID          (15)
+
+/* Registry of pktpool(s) */
+extern pktpool_t *pktpools_registry[PKTPOOL_MAXIMUM_ID + 1];
+
+/* Pool ID to/from Pool Pointer converters */
+#define PKTPOOL_ID2PTR(id)          (pktpools_registry[id])
+#define PKTPOOL_PTR2ID(pp)          (POOLID(pp))
+
 
 #ifdef BCMDBG_POOL
 extern int pktpool_dbg_register(pktpool_t *pktp, pktpool_cb_t cb, void *arg);
@@ -300,6 +415,7 @@ extern void *pktq_penq(struct pktq *pq, int prec, void *p);
 extern void *pktq_penq_head(struct pktq *pq, int prec, void *p);
 extern void *pktq_pdeq(struct pktq *pq, int prec);
 extern void *pktq_pdeq_prev(struct pktq *pq, int prec, void *prev_p);
+extern void *pktq_pdeq_with_fn(struct pktq *pq, int prec, ifpkt_cb_t fn, int arg);
 extern void *pktq_pdeq_tail(struct pktq *pq, int prec);
 /* Empty the queue at particular precedence level */
 extern void pktq_pflush(osl_t *osh, struct pktq *pq, int prec, bool dir,
@@ -346,13 +462,37 @@ extern uint pkttotlen(osl_t *osh, void *p);
 extern void *pktlast(osl_t *osh, void *p);
 extern uint pktsegcnt(osl_t *osh, void *p);
 extern uint pktsegcnt_war(osl_t *osh, void *p);
+<<<<<<< HEAD
 extern uint8 *pktoffset(osl_t *osh, void *p,  uint offset);
+=======
+extern uint8 *pktdataoffset(osl_t *osh, void *p,  uint offset);
+extern void *pktoffset(osl_t *osh, void *p,  uint offset);
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 /* Get priority from a packet and pass it back in scb (or equiv) */
 #define	PKTPRIO_VDSCP	0x100		/* DSCP prio found after VLAN tag */
 #define	PKTPRIO_VLAN	0x200		/* VLAN prio found */
 #define	PKTPRIO_UPD	0x400		/* DSCP used to update VLAN prio */
 #define	PKTPRIO_DSCP	0x800		/* DSCP prio found */
+<<<<<<< HEAD
+=======
+
+/* DSCP type definitions (RFC4594) */
+/* AF1x: High-Throughput Data (RFC2597) */
+#define DSCP_AF11	0x0A
+#define DSCP_AF12	0x0C
+#define DSCP_AF13	0x0E
+/* AF2x: Low-Latency Data (RFC2597) */
+#define DSCP_AF21	0x12
+#define DSCP_AF22	0x14
+#define DSCP_AF23	0x16
+/* AF3x: Multimedia Streaming (RFC2597) */
+#define DSCP_AF31	0x1A
+#define DSCP_AF32	0x1C
+#define DSCP_AF33	0x1E
+/* EF: Telephony (RFC3246) */
+#define DSCP_EF		0x2E
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 extern uint pktsetprio(void *pkt, bool update_vtag);
 
@@ -375,6 +515,8 @@ extern int bcm_ether_atoe(const char *p, struct ether_addr *ea);
 /* ip address */
 struct ipv4_addr;
 extern char *bcm_ip_ntoa(struct ipv4_addr *ia, char *buf);
+extern char *bcm_ipv6_ntoa(void *ipv6, char *buf);
+extern int bcm_atoipv4(const char *p, struct ipv4_addr *ip);
 
 /* delay */
 extern void bcm_mdelay(uint ms);
@@ -391,6 +533,8 @@ extern uint getgpiopin(char *vars, char *pin_name, uint def_pin);
 #define	bcmlog(fmt, a1, a2)
 #define	bcmdumplog(buf, size)	*buf = '\0'
 #define	bcmdumplogent(buf, idx)	-1
+
+#define TSF_TICKS_PER_MS	1000
 
 #define bcmtslog(tstamp, fmt, a1, a2)
 #define bcmprinttslogs()
@@ -529,7 +673,23 @@ extern int bcm_format_ssid(char* buf, const uchar ssid[], uint ssid_len);
 #define BCME_NODEVICE			-40 	/* Device not present */
 #define BCME_NMODE_DISABLED		-41 	/* NMODE disabled */
 #define BCME_NONRESIDENT		-42 /* access to nonresident overlay */
+<<<<<<< HEAD
 #define BCME_LAST			BCME_NONRESIDENT
+=======
+#define BCME_SCANREJECT			-43 	/* reject scan request */
+#define BCME_USAGE_ERROR                -44     /* WLCMD usage error */
+#define BCME_IOCTL_ERROR                -45     /* WLCMD ioctl error */
+#define BCME_SERIAL_PORT_ERR            -46     /* RWL serial port error */
+#define BCME_DISABLED			-47     /* Disabled in this build */
+#define BCME_DECERR				-48		/* Decrypt error */
+#define BCME_ENCERR				-49		/* Encrypt error */
+#define BCME_MICERR				-50		/* Integrity/MIC error */
+#define BCME_REPLAY				-51		/* Replay */
+#define BCME_IE_NOTFOUND		-52		/* IE not found */
+#define BCME_LAST			BCME_IE_NOTFOUND
+
+#define BCME_NOTENABLED BCME_DISABLED
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 /* These are collection of BCME Error strings */
 #define BCMERRSTRINGTABLE {		\
@@ -576,6 +736,16 @@ extern int bcm_format_ssid(char* buf, const uchar ssid[], uint ssid_len);
 	"Device Not Present",		\
 	"NMODE Disabled",		\
 	"Nonresident overlay access", \
+	"Scan Rejected",		\
+	"WLCMD usage error",		\
+	"WLCMD ioctl error",		\
+	"RWL serial port error", 	\
+	"Disabled",			\
+	"Decrypt error", \
+	"Encrypt error", \
+	"MIC error", \
+	"Replay", \
+	"IE not found", \
 }
 
 #ifndef ABS
@@ -590,8 +760,32 @@ extern int bcm_format_ssid(char* buf, const uchar ssid[], uint ssid_len);
 #define	MAX(a, b)		(((a) > (b)) ? (a) : (b))
 #endif /* MAX */
 
+<<<<<<< HEAD
+=======
+/* limit to [min, max] */
+#ifndef LIMIT_TO_RANGE
+#define LIMIT_TO_RANGE(x, min, max) \
+	((x) < (min) ? (min) : ((x) > (max) ? (max) : (x)))
+#endif /* LIMIT_TO_RANGE */
+
+/* limit to  max */
+#ifndef LIMIT_TO_MAX
+#define LIMIT_TO_MAX(x, max) \
+	(((x) > (max) ? (max) : (x)))
+#endif /* LIMIT_TO_MAX */
+
+/* limit to min */
+#ifndef LIMIT_TO_MIN
+#define LIMIT_TO_MIN(x, min) \
+	(((x) < (min) ? (min) : (x)))
+#endif /* LIMIT_TO_MIN */
+
+#define DELTA(curr, prev) ((curr) > (prev) ? ((curr) - (prev)) : \
+	(0xffffffff - (prev) + (curr) + 1))
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #define CEIL(x, y)		(((x) + ((y) - 1)) / (y))
-#define	ROUNDUP(x, y)		((((x) + ((y) - 1)) / (y)) * (y))
+#define ROUNDUP(x, y)		((((x) + ((y) - 1)) / (y)) * (y))
+#define ROUNDDN(p, align)	((p) & ~((align) - 1))
 #define	ISALIGNED(a, x)		(((uintptr)(a) & ((x) - 1)) == 0)
 #define ALIGN_ADDR(addr, boundary) (void *)(((uintptr)(addr) + (boundary) - 1) \
 	                                         & ~((boundary) - 1))
@@ -610,7 +804,16 @@ extern int bcm_format_ssid(char* buf, const uchar ssid[], uint ssid_len);
 #include <stddef.h>
 #define	OFFSETOF(type, member)	offsetof(type, member)
 #else
+<<<<<<< HEAD
 #define	OFFSETOF(type, member)	((uint)(uintptr)&((type *)0)->member)
+=======
+#  if ((__GNUC__ >= 4) && (__GNUC_MINOR__ >= 8))
+/* GCC 4.8+ complains when using our OFFSETOF macro in array length declarations. */
+#    define	OFFSETOF(type, member)	__builtin_offsetof(type, member)
+#  else
+#    define	OFFSETOF(type, member)	((uint)(uintptr)&((type *)0)->member)
+#  endif /* GCC 4.8 or newer */
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #endif /* __ARMCC_VERSION */
 #endif /* OFFSETOF */
 
@@ -618,20 +821,46 @@ extern int bcm_format_ssid(char* buf, const uchar ssid[], uint ssid_len);
 #define ARRAYSIZE(a)		(sizeof(a) / sizeof(a[0]))
 #endif
 
+<<<<<<< HEAD
+=======
+#ifndef ARRAYLAST /* returns pointer to last array element */
+#define ARRAYLAST(a)		(&a[ARRAYSIZE(a)-1])
+#endif
+
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 /* Reference a function; used to prevent a static function from being optimized out */
 extern void *_bcmutils_dummy_fn;
 #define REFERENCE_FUNCTION(f)	(_bcmutils_dummy_fn = (void *)(f))
 
 /* bit map related macros */
 #ifndef setbit
+<<<<<<< HEAD
 #ifndef NBBY		    /* the BSD family defines NBBY */
 #define	NBBY	8	/* 8 bits per byte */
 #endif /* #ifndef NBBY */
+=======
+#ifndef NBBY		/* the BSD family defines NBBY */
+#define	NBBY	8	/* 8 bits per byte */
+#endif /* #ifndef NBBY */
+#ifdef BCMUTILS_BIT_MACROS_USE_FUNCS
+extern void setbit(void *array, uint bit);
+extern void clrbit(void *array, uint bit);
+extern bool isset(const void *array, uint bit);
+extern bool isclr(const void *array, uint bit);
+#else
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #define	setbit(a, i)	(((uint8 *)a)[(i) / NBBY] |= 1 << ((i) % NBBY))
 #define	clrbit(a, i)	(((uint8 *)a)[(i) / NBBY] &= ~(1 << ((i) % NBBY)))
 #define	isset(a, i)	(((const uint8 *)a)[(i) / NBBY] & (1 << ((i) % NBBY)))
 #define	isclr(a, i)	((((const uint8 *)a)[(i) / NBBY] & (1 << ((i) % NBBY))) == 0)
+<<<<<<< HEAD
 #endif /* setbit */
+=======
+#endif
+#endif /* setbit */
+
+#define	isbitset(a, i)	(((a) & (1 << (i))) != 0)
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 #define	NBITS(type)	(sizeof(type) * 8)
 #define NBITVAL(nbits)	(1 << (nbits))
@@ -639,9 +868,47 @@ extern void *_bcmutils_dummy_fn;
 #define	NBITMASK(nbits)	MAXBITVAL(nbits)
 #define MAXNBVAL(nbyte)	MAXBITVAL((nbyte) * 8)
 
+<<<<<<< HEAD
 /* basic mux operation - can be optimized on several architectures */
 #define MUX(pred, true, false) ((pred) ? (true) : (false))
 
+=======
+extern void bcm_bitprint32(const uint32 u32);
+
+/*
+ * ----------------------------------------------------------------------------
+ * Multiword map of 2bits, nibbles
+ * setbit2 setbit4 (void *ptr, uint32 ix, uint32 val)
+ * getbit2 getbit4 (void *ptr, uint32 ix)
+ * ----------------------------------------------------------------------------
+ */
+
+#define DECLARE_MAP_API(NB, RSH, LSH, OFF, MSK)                     \
+static INLINE void setbit##NB(void *ptr, uint32 ix, uint32 val)     \
+{                                                                   \
+	uint32 *addr = (uint32 *)ptr;                                   \
+	uint32 *a = addr + (ix >> RSH); /* (ix / 2^RSH) */              \
+	uint32 pos = (ix & OFF) << LSH; /* (ix % 2^RSH) * 2^LSH */      \
+	uint32 mask = (MSK << pos);                                     \
+	uint32 tmp = *a & ~mask;                                        \
+	*a = tmp | (val << pos);                                        \
+}                                                                   \
+static INLINE uint32 getbit##NB(void *ptr, uint32 ix)               \
+{                                                                   \
+	uint32 *addr = (uint32 *)ptr;                                   \
+	uint32 *a = addr + (ix >> RSH);                                 \
+	uint32 pos = (ix & OFF) << LSH;                                 \
+	return ((*a >> pos) & MSK);                                     \
+}
+
+DECLARE_MAP_API(2,  4, 1, 15U, 0x0003) /* setbit2() and getbit2() */
+DECLARE_MAP_API(4,  3, 2,  7U, 0x000F) /* setbit4() and getbit4() */
+
+
+/* basic mux operation - can be optimized on several architectures */
+#define MUX(pred, true, false) ((pred) ? (true) : (false))
+
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 /* modulo inc/dec - assumes x E [0, bound - 1] */
 #define MODDEC(x, bound) MUX((x) == 0, (bound) - 1, (x) - 1)
 #define MODINC(x, bound) MUX((x) == (bound) - 1, 0, (x) + 1)
@@ -690,6 +957,15 @@ extern void *_bcmutils_dummy_fn;
 #define MACDBG				"%02x:%02x:%02x"
 #define MAC2STRDBG(ea) (ea)[0], (ea)[4], (ea)[5]
 #endif /* SIMPLE_MAC_PRINT */
+<<<<<<< HEAD
+=======
+
+#define IPv4_ADDR_STR "%d.%d.%d.%d"
+#define IPv4_ADDR_TO_STR(addr)	((uint32)addr & 0xff000000) >> 24, \
+								((uint32)addr & 0x00ff0000) >> 16, \
+								((uint32)addr & 0x0000ff00) >> 8, \
+								((uint32)addr & 0x000000ff)
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 /* bcm_format_flags() bit description structure */
 typedef struct bcm_bit_desc {
@@ -697,6 +973,7 @@ typedef struct bcm_bit_desc {
 	const char* name;
 } bcm_bit_desc_t;
 
+<<<<<<< HEAD
 /* tag_ID/length/value_buffer tuple */
 typedef struct bcm_tlv {
 	uint8	id;
@@ -706,6 +983,13 @@ typedef struct bcm_tlv {
 
 /* Check that bcm_tlv_t fits into the given buflen */
 #define bcm_valid_tlv(elt, buflen) ((buflen) >= 2 && (int)(buflen) >= (int)(2 + (elt)->len))
+=======
+/* bcm_format_field */
+typedef struct bcm_bit_desc_ex {
+	uint32 mask;
+	const bcm_bit_desc_t *bitfield;
+} bcm_bit_desc_ex_t;
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 /* buffer length for ethernet address from bcm_ether_ntoa() */
 #define ETHER_ADDR_STR_LEN	18	/* 18-bytes of Ethernet address buffer length */
@@ -743,6 +1027,9 @@ extern uint32 hndcrc32(uint8 *p, uint nbytes, uint32 crc);
 /* format/print */
 #if defined(DHD_DEBUG) || defined(WLMSG_PRHDRS) || defined(WLMSG_PRPKT) || \
 	defined(WLMSG_ASSOC)
+/* print out the value a field has: fields may have 1-32 bits and may hold any value */
+extern int bcm_format_field(const bcm_bit_desc_ex_t *bd, uint32 field, char* buf, int len);
+/* print out which bits in flags are set */
 extern int bcm_format_flags(const bcm_bit_desc_t *bd, uint32 flags, char* buf, int len);
 #endif
 
@@ -758,14 +1045,50 @@ extern void printbig(char *buf);
 extern void prhex(const char *msg, uchar *buf, uint len);
 
 /* IE parsing */
+<<<<<<< HEAD
+=======
+
+/* tag_ID/length/value_buffer tuple */
+typedef struct bcm_tlv {
+	uint8	id;
+	uint8	len;
+	uint8	data[1];
+} bcm_tlv_t;
+
+#define BCM_TLV_MAX_DATA_SIZE (255)
+
+#define BCM_TLV_HDR_SIZE (OFFSETOF(bcm_tlv_t, data))
+
+/* Check that bcm_tlv_t fits into the given buflen */
+#define bcm_valid_tlv(elt, buflen) (\
+	 ((int)(buflen) >= (int)BCM_TLV_HDR_SIZE) && \
+	 ((int)(buflen) >= (int)(BCM_TLV_HDR_SIZE + (elt)->len)))
+
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 extern bcm_tlv_t *bcm_next_tlv(bcm_tlv_t *elt, int *buflen);
 extern bcm_tlv_t *bcm_parse_tlvs(void *buf, int buflen, uint key);
 extern bcm_tlv_t *bcm_parse_ordered_tlvs(void *buf, int buflen, uint key);
 
+<<<<<<< HEAD
 /* bcmerror */
 extern const char *bcmerrorstr(int bcmerror);
 extern bcm_tlv_t *bcm_parse_tlvs(void *buf, int buflen, uint key);
 
+=======
+extern bcm_tlv_t *bcm_find_vendor_ie(void *tlvs, int tlvs_len, const char *voui, uint8 *type,
+	int type_len);
+
+extern uint8 *bcm_write_tlv(int type, const void *data, int datalen, uint8 *dst);
+extern uint8 *bcm_write_tlv_safe(int type, const void *data, int datalen, uint8 *dst,
+	int dst_maxlen);
+
+extern uint8 *bcm_copy_tlv(const void *src, uint8 *dst);
+extern uint8 *bcm_copy_tlv_safe(const void *src, uint8 *dst, int dst_maxlen);
+
+/* bcmerror */
+extern const char *bcmerrorstr(int bcmerror);
+
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 /* multi-bool data type: set of bools, mbool is true if any is set */
 typedef uint32 mbool;
 #define mboolset(mb, bit)		((mb) |= (bit))		/* set one bool */
@@ -800,6 +1123,115 @@ extern uint8 bcm_mw_to_qdbm(uint16 mw);
 extern uint bcm_mkiovar(char *name, char *data, uint datalen, char *buf, uint len);
 
 unsigned int process_nvram_vars(char *varbuf, unsigned int len);
+
+/* calculate a * b + c */
+extern void bcm_uint64_multiple_add(uint32* r_high, uint32* r_low, uint32 a, uint32 b, uint32 c);
+/* calculate a / b */
+extern void bcm_uint64_divide(uint32* r, uint32 a_high, uint32 a_low, uint32 b);
+
+
+/* Public domain bit twiddling hacks/utilities: Sean Eron Anderson */
+
+/* Table driven count set bits. */
+static const uint8 /* Table only for use by bcm_cntsetbits */
+_CSBTBL[256] =
+{
+#	define B2(n)    n,     n + 1,     n + 1,     n + 2
+#	define B4(n) B2(n), B2(n + 1), B2(n + 1), B2(n + 2)
+#	define B6(n) B4(n), B4(n + 1), B4(n + 1), B4(n + 2)
+	B6(0), B6(0 + 1), B6(0 + 1), B6(0 + 2)
+};
+
+static INLINE uint32 /* Uses table _CSBTBL for fast counting of 1's in a u32 */
+bcm_cntsetbits(const uint32 u32)
+{
+	/* function local scope declaration of const _CSBTBL[] */
+	const uint8 * p = (const uint8 *)&u32;
+	return (_CSBTBL[p[0]] + _CSBTBL[p[1]] + _CSBTBL[p[2]] + _CSBTBL[p[3]]);
+}
+
+
+static INLINE int /* C equivalent count of leading 0's in a u32 */
+C_bcm_count_leading_zeros(uint32 u32)
+{
+	int shifts = 0;
+	while (u32) {
+		shifts++; u32 >>= 1;
+	}
+	return (32U - shifts);
+}
+
+#ifdef BCMDRIVER
+/*
+ * Assembly instructions: Count Leading Zeros
+ * "clz"	: MIPS, ARM
+ * "cntlzw"	: PowerPC
+ * "BSF"	: x86
+ * "lzcnt"	: AMD, SPARC
+ */
+
+#if defined(__arm__)
+
+#if defined(__ARM_ARCH_7M__) /* Cortex M3 */
+#define __USE_ASM_CLZ__
+#endif /* __ARM_ARCH_7M__ */
+
+#if defined(__ARM_ARCH_7R__) /* Cortex R4 */
+#define __USE_ASM_CLZ__
+#endif /* __ARM_ARCH_7R__ */
+
+#endif /* __arm__ */
+
+static INLINE int
+bcm_count_leading_zeros(uint32 u32)
+{
+#if defined(__USE_ASM_CLZ__)
+	int zeros;
+	__asm__ volatile("clz    %0, %1 \n" : "=r" (zeros) : "r"  (u32));
+	return zeros;
+#else	/* C equivalent */
+	return C_bcm_count_leading_zeros(u32);
+#endif  /* C equivalent */
+}
+
+/* INTERFACE: Multiword bitmap based small id allocator. */
+struct bcm_mwbmap;	/* forward declaration for use as an opaque mwbmap handle */
+
+#define BCM_MWBMAP_INVALID_HDL	((struct bcm_mwbmap *)NULL)
+#define BCM_MWBMAP_INVALID_IDX	((uint32)(~0U))
+
+/* Incarnate a multiword bitmap based small index allocator */
+extern struct bcm_mwbmap * bcm_mwbmap_init(osl_t * osh, uint32 items_max);
+
+/* Free up the multiword bitmap index allocator */
+extern void bcm_mwbmap_fini(osl_t * osh, struct bcm_mwbmap * mwbmap_hdl);
+
+/* Allocate a unique small index using a multiword bitmap index allocator */
+extern uint32 bcm_mwbmap_alloc(struct bcm_mwbmap * mwbmap_hdl);
+
+/* Force an index at a specified position to be in use */
+extern void bcm_mwbmap_force(struct bcm_mwbmap * mwbmap_hdl, uint32 bitix);
+
+/* Free a previously allocated index back into the multiword bitmap allocator */
+extern void bcm_mwbmap_free(struct bcm_mwbmap * mwbmap_hdl, uint32 bitix);
+
+/* Fetch the toal number of free indices in the multiword bitmap allocator */
+extern uint32 bcm_mwbmap_free_cnt(struct bcm_mwbmap * mwbmap_hdl);
+
+/* Determine whether an index is inuse or free */
+extern bool bcm_mwbmap_isfree(struct bcm_mwbmap * mwbmap_hdl, uint32 bitix);
+
+/* Debug dump a multiword bitmap allocator */
+extern void bcm_mwbmap_show(struct bcm_mwbmap * mwbmap_hdl);
+
+extern void bcm_mwbmap_audit(struct bcm_mwbmap * mwbmap_hdl);
+/* End - Multiword bitmap based small Id allocator. */
+#endif /* BCMDRIVER */
+
+extern void bcm_uint64_right_shift(uint32* r, uint32 a_high, uint32 a_low, uint32 b);
+
+void bcm_add_64(uint32* r_hi, uint32* r_lo, uint32 offset);
+void bcm_sub_64(uint32* r_hi, uint32* r_lo, uint32 offset);
 
 #ifdef __cplusplus
 	}

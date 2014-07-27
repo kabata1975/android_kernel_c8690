@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (C) 1999-2012, Broadcom Corporation
+=======
+ * Copyright (C) 1999-2014, Broadcom Corporation
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
  * 
  *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -19,7 +23,11 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
+<<<<<<< HEAD
  * $Id: epivers.h.in,v 13.33 2010-09-08 22:08:53 csm Exp $
+=======
+ * $Id: epivers.h.in,v 13.33 2010-09-08 22:08:53 $
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
  *
 */
 
@@ -28,6 +36,7 @@
 
 #define	EPI_MAJOR_VERSION	1
 
+<<<<<<< HEAD
 #define	EPI_MINOR_VERSION	28
 
 #define	EPI_RC_NUMBER		23
@@ -52,5 +61,23 @@
 #define	EPI_VERSION_STR		"1.28.23 (r)"
 #endif
 #endif /* BCMINTERNAL */
+=======
+#define	EPI_MINOR_VERSION	141
+
+#define	EPI_RC_NUMBER		44
+
+#define	EPI_INCREMENTAL_NUMBER	4
+
+#define	EPI_BUILD_NUMBER	0
+
+#define	EPI_VERSION		1, 141, 44, 4
+
+#define	EPI_VERSION_NUM		0x018d2c04
+
+#define EPI_VERSION_DEV		1.141.44
+
+/* Driver Version String, ASCII, 32 chars max */
+#define	EPI_VERSION_STR		"1.141.44.4 (r)"
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 #endif /* _epivers_h_ */

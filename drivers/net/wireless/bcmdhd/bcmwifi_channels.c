@@ -3,7 +3,7 @@
  * Contents are wifi-specific, used by any kernel or app-level
  * software that might want wifi things as it grows.
  *
- * Copyright (C) 1999-2012, Broadcom Corporation
+ * Copyright (C) 1999-2014, Broadcom Corporation
  * 
  *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -27,10 +27,10 @@
 
 #include <bcm_cfg.h>
 #include <typedefs.h>
+#include <bcmutils.h>
 
 #ifdef BCMDRIVER
 #include <osl.h>
-#include <bcmutils.h>
 #define strtoul(nptr, endptr, base) bcm_strtoul((nptr), (endptr), (base))
 #define tolower(c) (bcm_isupper((c)) ? ((c) + 'a' - 'A') : (c))
 #else
@@ -42,17 +42,20 @@
 #endif
 #endif /* BCMDRIVER */
 
+<<<<<<< HEAD
 #ifdef _bcmwifi_c_
 /* temporary for transitional compatibility */
 #include <bcmwifi.h>
 #else
+=======
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #include <bcmwifi_channels.h>
-#endif
 
 #if defined(WIN32) && (defined(BCMDLL) || defined(WLMDLL))
 #include <bcmstdlib.h> 	/* For wl/exe/GNUmakefile.brcm_wlu and GNUmakefile.wlm_dll */
 #endif
 
+<<<<<<< HEAD
 #ifndef D11AC_IOTYPES
 
 /* Definitions for legacy Chanspec type */
@@ -269,6 +272,8 @@ wf_chspec_ctlchspec(chanspec_t chspec)
 
 #else /* D11AC_IOTYPES */
 
+=======
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 /* Definitions for D11AC capable Chanspec type */
 
 /* Chanspec ASCII representation with 802.11ac capability:
@@ -560,7 +565,11 @@ wf_chspec_aton(const char *a)
 		return 0;
 
 	/* if we are looking at a 'g', then the first number was a band */
+<<<<<<< HEAD
 	c = tolower(a[0]);
+=======
+	c = tolower((int)a[0]);
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 	if (c == 'g') {
 		a ++; /* consume the char */
 
@@ -576,7 +585,7 @@ wf_chspec_aton(const char *a)
 		if (!read_uint(&a, &ctl_ch))
 			return 0;
 
-		c = tolower(a[0]);
+		c = tolower((int)a[0]);
 	}
 	else {
 		/* first number is channel, use default for band */
@@ -626,7 +635,7 @@ wf_chspec_aton(const char *a)
 	 * or '+80' if bw = 80, to make '80+80' bw.
 	 */
 
-	c = tolower(a[0]);
+	c = tolower((int)a[0]);
 
 	/* if we have a 2g/40 channel, we should have a l/u spec now */
 	if (chspec_band == WL_CHANSPEC_BAND_2G && bw == 40) {
@@ -702,7 +711,7 @@ done_read:
 	/* if the bw is 20, center and sideband are trivial */
 	else if (chspec_bw == WL_CHANSPEC_BW_20) {
 		chspec_ch = ctl_ch;
-		chspec_sb = 0;
+		chspec_sb = WL_CHANSPEC_CTL_SB_NONE;
 	}
 	/* if the bw is 40/80/160, not 80+80, a single method
 	 * can be used to to find the center and sideband
@@ -911,6 +920,15 @@ wf_chspec_valid(chanspec_t chanspec)
 				}
 
 				if (i == num_ch) {
+<<<<<<< HEAD
+=======
+					/* check for channel 165 which is not the side band
+					 * of 40MHz 5G channel
+					 */
+					if (chspec_ch == 165)
+						i = 0;
+
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 					/* check for legacy JP channels on failure */
 					if (chspec_ch == 34 || chspec_ch == 38 ||
 					    chspec_ch == 42 || chspec_ch == 46)
@@ -1045,11 +1063,18 @@ wf_channel2chspec(uint ctl_ch, uint bw)
 	if (sb < 0) {
 		return 0;
 	}
+<<<<<<< HEAD
 
 	return chspec;
 }
 #endif /* D11AC_IOTYPES */
 
+=======
+
+	return chspec;
+}
+
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 /*
  * This function returns the chanspec for the primary 40MHz of an 80MHz channel.
  * The control sideband specifies the same 20MHz channel that the 80MHz channel is using
@@ -1176,4 +1201,240 @@ wf_channel2mhz(uint ch, uint start_factor)
 		freq = ch * 5 + start_factor / 2;
 
 	return freq;
+}
+
+/*
+ * Returns the 80+80 chanspec corresponding to the following input parameters
+ *
+ *    primary_20mhz - Primary 20 Mhz channel
+ *    chan1 - channel number of first 80 Mhz band
+ *    chan2 - channel number of second 80 Mhz band
+ *
+ *  parameters chan1 and chan2  are channel numbers in {42, 58, 106, 122, 138, 155}
+ *
+ *  returns INVCHANSPEC in case of error
+ */
+
+chanspec_t
+wf_chspec_get8080_chspec(uint8 primary_20mhz, uint8 chan1, uint8 chan2)
+{
+	int sb = 0;
+	uint16 chanspec = 0;
+	int chan1_id = 0, chan2_id = 0;
+
+	/* does the primary channel fit with the 1st 80MHz channel ? */
+	sb = channel_to_sb(chan1, primary_20mhz, 80);
+	if (sb < 0) {
+		/* no, so does the primary channel fit with the 2nd 80MHz channel ? */
+		sb = channel_to_sb(chan2, primary_20mhz, 80);
+		if (sb < 0) {
+			/* no match for ctl_ch to either 80MHz center channel */
+			return INVCHANSPEC;
+		}
+		/* sb index is 0-3 for the low 80MHz channel, and 4-7 for
+		 * the high 80MHz channel. Add 4 to to shift to high set.
+		 */
+		sb += 4;
+	}
+	chan1_id = channel_80mhz_to_id(chan1);
+	chan2_id = channel_80mhz_to_id(chan2);
+	if (chan1_id == -1 || chan2_id == -1)
+		return INVCHANSPEC;
+
+	chanspec = (chan1_id << WL_CHANSPEC_CHAN1_SHIFT)|
+		(chan2_id << WL_CHANSPEC_CHAN2_SHIFT)|
+		(sb << WL_CHANSPEC_CTL_SB_SHIFT)|
+		(WL_CHANSPEC_BW_8080)|
+		(WL_CHANSPEC_BAND_5G);
+
+	return chanspec;
+
+}
+
+/*
+ * This function returns the 80Mhz channel for the given id.
+ */
+static uint8
+wf_chspec_get80Mhz_ch(uint8 chan_80Mhz_id)
+{
+	if (chan_80Mhz_id < WF_NUM_5G_80M_CHANS)
+		return wf_5g_80m_chans[chan_80Mhz_id];
+
+	return 0;
+}
+
+/*
+ * Returns the primary 80 Mhz channel for the provided chanspec
+ *
+ *    chanspec - Input chanspec for which the 80MHz primary channel has to be retrieved
+ *
+ *  returns -1 in case the provided channel is 20/40 Mhz chanspec
+ */
+
+uint8
+wf_chspec_primary80_channel(chanspec_t chanspec)
+{
+	uint8 chan1 = 0, chan2 = 0, primary_20mhz = 0, primary80_chan = 0;
+	int sb = 0;
+
+	primary_20mhz = wf_chspec_ctlchan(chanspec);
+
+	if (CHSPEC_IS80(chanspec))	{
+		primary80_chan = CHSPEC_CHANNEL(chanspec);
+	}
+	else if (CHSPEC_IS8080(chanspec)) {
+		chan1 = wf_chspec_get80Mhz_ch(CHSPEC_CHAN1(chanspec));
+		chan2 = wf_chspec_get80Mhz_ch(CHSPEC_CHAN2(chanspec));
+
+		/* does the primary channel fit with the 1st 80MHz channel ? */
+		sb = channel_to_sb(chan1, primary_20mhz, 80);
+		if (sb < 0) {
+			/* no, so does the primary channel fit with the 2nd 80MHz channel ? */
+			sb = channel_to_sb(chan2, primary_20mhz, 80);
+			if (!(sb < 0)) {
+				primary80_chan = chan2;
+			}
+		}
+		else {
+			primary80_chan = chan1;
+		}
+	}
+	else if (CHSPEC_IS160(chanspec)) {
+		chan1 = CHSPEC_CHANNEL(chanspec);
+		sb = channel_to_sb(chan1, primary_20mhz, 160);
+		if (!(sb < 0)) {
+		    /* based on the sb value  primary 80 channel can be retrieved
+			 * if sb is in range 0 to 3 the lower band is the 80Mhz primary band
+			 */
+			if (sb < 4) {
+				primary80_chan = chan1 - CH_40MHZ_APART;
+			}
+			/* if sb is in range 4 to 7 the lower band is the 80Mhz primary band */
+			else
+			{
+				primary80_chan = chan1 + CH_40MHZ_APART;
+			}
+		}
+	}
+	else {
+		/* for 20 and 40 Mhz */
+		primary80_chan = -1;
+	}
+	return primary80_chan;
+}
+
+/*
+ * Returns the secondary 80 Mhz channel for the provided chanspec
+ *
+ *    chanspec - Input chanspec for which the 80MHz secondary channel has to be retrieved
+ *
+ *  returns -1 in case the provided channel is 20/40 Mhz chanspec
+ */
+uint8
+wf_chspec_secondary80_channel(chanspec_t chanspec)
+{
+	uint8 chan1 = 0, chan2 = 0, primary_20mhz = 0, secondary80_chan = 0;
+	int sb = 0;
+
+	primary_20mhz = wf_chspec_ctlchan(chanspec);
+	if (CHSPEC_IS80(chanspec)) {
+		secondary80_chan = -1;
+	}
+	else if (CHSPEC_IS8080(chanspec)) {
+		chan1 = wf_chspec_get80Mhz_ch(CHSPEC_CHAN1(chanspec));
+		chan2 = wf_chspec_get80Mhz_ch(CHSPEC_CHAN2(chanspec));
+
+		/* does the primary channel fit with the 1st 80MHz channel ? */
+		sb = channel_to_sb(chan1, primary_20mhz, 80);
+		if (sb < 0) {
+			/* no, so does the primary channel fit with the 2nd 80MHz channel ? */
+			sb = channel_to_sb(chan2, primary_20mhz, 80);
+			if (!(sb < 0)) {
+				secondary80_chan = chan1;
+			}
+		}
+		else {
+			secondary80_chan = chan2;
+		}
+	}
+	else if (CHSPEC_IS160(chanspec)) {
+		chan1 = CHSPEC_CHANNEL(chanspec);
+		sb = channel_to_sb(chan1, primary_20mhz, 160);
+		if (!(sb < 0)) {
+		    /* based on the sb value  secondary 80 channel can be retrieved
+			  *if sb is in range 0 to 3 upper band is the secondary 80Mhz  band
+			  */
+			if (sb < 4) {
+				secondary80_chan = chan1 + CH_40MHZ_APART;
+			}
+			/* if sb is in range 4 to 7 the lower band is the secondary 80Mhz band */
+			else
+			{
+				secondary80_chan = chan1 - CH_40MHZ_APART;
+			}
+		}
+	}
+	else {
+		/* for 20 and 40 Mhz */
+		secondary80_chan  = -1;
+	}
+	return secondary80_chan;
+}
+
+/*
+ * This function returns the chanspec for the primary 80MHz of an 160MHz or 80+80 channel.
+ *
+ *    chanspec - Input chanspec for which the primary 80Mhz chanspec has to be retreived
+ *
+ *  returns INVCHANSPEC in case the provided channel is 20/40 Mhz chanspec
+ */
+chanspec_t
+wf_chspec_primary80_chspec(chanspec_t chspec)
+{
+	chanspec_t chspec80;
+	uint center_chan, chan1 = 0, chan2 = 0;
+	uint sb;
+
+	ASSERT(!wf_chspec_malformed(chspec));
+	if (CHSPEC_IS8080(chspec)) {
+		chan1 = wf_chspec_get80Mhz_ch(CHSPEC_CHAN1(chspec));
+		chan2 = wf_chspec_get80Mhz_ch(CHSPEC_CHAN2(chspec));
+
+		sb = CHSPEC_CTL_SB(chspec);
+
+		if (sb < 4) {
+			/* Primary 80MHz is on lower side */
+			center_chan = chan1;
+		}
+		else
+		{
+			/* Primary 80MHz is on upper side */
+			center_chan = chan2;
+			sb -= 4;
+		}
+		/* Create primary 80MHz chanspec */
+		chspec80 = (WL_CHANSPEC_BAND_5G | WL_CHANSPEC_BW_80 |sb | center_chan);
+	}
+	else if (CHSPEC_IS160(chspec)) {
+		center_chan = CHSPEC_CHANNEL(chspec);
+		sb = CHSPEC_CTL_SB(chspec);
+
+		if (sb < 4) {
+			/* Primary 80MHz is on upper side */
+			center_chan -= CH_40MHZ_APART;
+		}
+		else
+		{
+			/* Primary 80MHz is on lower side */
+			center_chan += CH_40MHZ_APART;
+			sb -= 4;
+		}
+		/* Create primary 80MHz chanspec */
+		chspec80 = (WL_CHANSPEC_BAND_5G | WL_CHANSPEC_BW_80 | sb | center_chan);
+	}
+	else
+	{
+		chspec80 = INVCHANSPEC;
+	}
+	return chspec80;
 }

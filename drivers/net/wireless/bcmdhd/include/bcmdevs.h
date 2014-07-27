@@ -1,7 +1,7 @@
 /*
  * Broadcom device-specific manifest constants.
  *
- * Copyright (C) 1999-2012, Broadcom Corporation
+ * Copyright (C) 1999-2014, Broadcom Corporation
  * 
  *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -21,7 +21,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: bcmdevs.h 329854 2012-04-27 01:42:28Z $
+ * $Id: bcmdevs.h 456607 2014-02-19 09:26:42Z $
  */
 
 #ifndef	_BCMDEVS_H
@@ -63,6 +63,15 @@
 #define BCM_DNGL_BL_PID_43239   0xbd1b
 #define BCM_DNGL_BL_PID_4324	0xbd1c
 #define BCM_DNGL_BL_PID_4360	0xbd1d
+#define BCM_DNGL_BL_PID_43143	0xbd1e
+#define BCM_DNGL_BL_PID_43242	0xbd1f
+#define BCM_DNGL_BL_PID_43342	0xbd21
+#define BCM_DNGL_BL_PID_4335	0xbd20
+#define BCM_DNGL_BL_PID_43341	0xbd22
+#define BCM_DNGL_BL_PID_4350    0xbd23
+#define BCM_DNGL_BL_PID_4345    0xbd24
+#define BCM_DNGL_BL_PID_4349	0xbd25
+#define BCM_DNGL_BL_PID_4354	0xbd26
 
 #define BCM_DNGL_BDC_PID	0x0bdc
 #define BCM_DNGL_JTAG_PID	0x4a44
@@ -131,6 +140,11 @@
 #define BCM4330_D11N5G_ID       0x4362          /* 4330 802.11n 5G device */
 #define BCM4336_D11N_ID		0x4343		/* 4336 802.11n 2.4GHz device */
 #define BCM6362_D11N_ID		0x435f		/* 6362 802.11n dualband device */
+<<<<<<< HEAD
+=======
+#define BCM6362_D11N2G_ID	0x433f		/* 6362 802.11n 2.4Ghz band id */
+#define BCM6362_D11N5G_ID	0x434f		/* 6362 802.11n 5Ghz band id */
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #define BCM4331_D11N_ID		0x4331		/* 4331 802.11n dualband id */
 #define BCM4331_D11N2G_ID	0x4332		/* 4331 802.11n 2.4Ghz band id */
 #define BCM4331_D11N5G_ID	0x4333		/* 4331 802.11n 5Ghz band id */
@@ -146,15 +160,26 @@
 #define BCM43131_D11N2G_ID	0x43aa		/* 43131 802.11n 2.4GHz device */
 #define BCM4314_D11N2G_ID	0x4364		/* 4314 802.11n 2.4G device */
 #define BCM43142_D11N2G_ID	0x4365		/* 43142 802.11n 2.4G device */
+<<<<<<< HEAD
 #define BCM4334_D11N_ID		0x4380		/* 4334 802.11n dualband device */
 #define BCM4334_D11N2G_ID	0x4381		/* 4334 802.11n 2.4G device */
 #define BCM4334_D11N5G_ID	0x4382		/* 4334 802.11n 5G device */
+=======
+#define BCM43143_D11N2G_ID	0x4366		/* 43143 802.11n 2.4G device */
+#define BCM4334_D11N_ID		0x4380		/* 4334 802.11n dualband device */
+#define BCM4334_D11N2G_ID	0x4381		/* 4334 802.11n 2.4G device */
+#define BCM4334_D11N5G_ID	0x4382		/* 4334 802.11n 5G device */
+#define BCM43342_D11N_ID	0x4383		/* 43342 802.11n dualband device */
+#define BCM43342_D11N2G_ID	0x4384		/* 43342 802.11n 2.4G device */
+#define BCM43342_D11N5G_ID	0x4385		/* 43342 802.11n 5G device */
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #define BCM43341_D11N_ID	0x4386		/* 43341 802.11n dualband device */
 #define BCM43341_D11N2G_ID	0x4387		/* 43341 802.11n 2.4G device */
 #define BCM43341_D11N5G_ID	0x4388		/* 43341 802.11n 5G device */
 #define BCM4360_D11AC_ID	0x43a0
 #define BCM4360_D11AC2G_ID	0x43a1
 #define BCM4360_D11AC5G_ID	0x43a2
+<<<<<<< HEAD
 
 /* PCI Subsystem ID */
 #define BCM943228HMB_SSID_VEN1	0x0607
@@ -162,12 +187,68 @@
 #define BCM94313HMG_SSID_VEN1	0x0609
 
 
+=======
+#define BCM4345_D11AC_ID	0x43ab		/* 4345 802.11ac dualband device */
+#define BCM4345_D11AC2G_ID	0x43ac		/* 4345 802.11ac 2.4G device */
+#define BCM4345_D11AC5G_ID	0x43ad		/* 4345 802.11ac 5G device */
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #define BCM4335_D11AC_ID	0x43ae
 #define BCM4335_D11AC2G_ID	0x43af
 #define BCM4335_D11AC5G_ID	0x43b0
 #define BCM4352_D11AC_ID	0x43b1		/* 4352 802.11ac dualband device */
 #define BCM4352_D11AC2G_ID	0x43b2		/* 4352 802.11ac 2.4G device */
 #define BCM4352_D11AC5G_ID	0x43b3		/* 4352 802.11ac 5G device */
+<<<<<<< HEAD
+=======
+#define BCM43602_D11AC_ID	0x43ba		/* ac dualband PCI devid SPROM programmed */
+#define BCM43602_D11AC2G_ID	0x43bb		/* 43602 802.11ac 2.4G device */
+#define BCM43602_D11AC5G_ID	0x43bc		/* 43602 802.11ac 5G device */
+
+/* PCI Subsystem ID */
+#define BCM943228HMB_SSID_VEN1	0x0607
+#define BCM94313HMGBL_SSID_VEN1	0x0608
+#define BCM94313HMG_SSID_VEN1	0x0609
+#define BCM943142HM_SSID_VEN1	0x0611
+
+#define BCM43143_D11N2G_ID	0x4366		/* 43143 802.11n 2.4G device */
+
+#define BCM43242_D11N_ID	0x4367		/* 43242 802.11n dualband device */
+#define BCM43242_D11N2G_ID	0x4368		/* 43242 802.11n 2.4G device */
+#define BCM43242_D11N5G_ID	0x4369		/* 43242 802.11n 5G device */
+
+#define BCM4350_D11AC_ID	0x43a3
+#define BCM4350_D11AC2G_ID	0x43a4
+#define BCM4350_D11AC5G_ID	0x43a5
+
+#define BCM43556_D11AC_ID	0x43b7
+#define BCM43556_D11AC2G_ID	0x43b8
+#define BCM43556_D11AC5G_ID	0x43b9
+
+#define BCM43558_D11AC_ID	0x43c0
+#define BCM43558_D11AC2G_ID	0x43c1
+#define BCM43558_D11AC5G_ID	0x43c2
+
+#define BCM43566_D11AC_ID	0x43d3
+#define BCM43566_D11AC2G_ID	0x43d4
+#define BCM43566_D11AC5G_ID	0x43d5
+
+#define BCM43568_D11AC_ID	0x43d6
+#define BCM43568_D11AC2G_ID	0x43d7
+#define BCM43568_D11AC5G_ID	0x43d8
+
+#define BCM43569_D11AC_ID	0x43d9
+#define BCM43569_D11AC2G_ID	0x43da
+#define BCM43569_D11AC5G_ID	0x43db
+
+#define BCM4354_D11AC_ID	0x43df		/* 4354 802.11ac dualband device */
+#define BCM4354_D11AC2G_ID	0x43e0		/* 4354 802.11ac 2.4G device */
+#define BCM4354_D11AC5G_ID	0x43e1		/* 4354 802.11ac 5G device */
+
+
+#define BCM43349_D11N_ID	0x43e6		/* 43349 802.11n dualband id */
+#define BCM43349_D11N2G_ID	0x43e7		/* 43349 802.11n 2.4Ghz band id */
+#define BCM43349_D11N5G_ID	0x43e8		/* 43349 802.11n 5Ghz band id */
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 #define	BCMGPRS_UART_ID		0x4333		/* Uart id used by 4306/gprs card */
 #define	BCMGPRS2_UART_ID	0x4344		/* Uart id used by 4306/gprs card */
@@ -205,6 +286,11 @@
 #define	BCM47XX_GIGETH_ID	0x471f		/* 47xx GbE (5700) */
 #define	BCM4712_MIPS_ID		0x4720		/* 4712 base devid */
 #define	BCM4716_DEVICE_ID	0x4722		/* 4716 base devid */
+<<<<<<< HEAD
+=======
+#define	BCM47XX_USB30H_ID	0x472a		/* 47xx usb 3.0 host */
+#define	BCM47XX_USB30D_ID	0x472b		/* 47xx usb 3.0 device */
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #define BCM47XX_SMBUS_EMU_ID	0x47fe		/* 47xx emulated SMBus device */
 #define	BCM47XX_XOR_EMU_ID	0x47ff		/* 47xx emulated XOR engine */
 #define	EPI41210_DEVICE_ID	0xa0fa		/* bcm4210 */
@@ -260,6 +346,7 @@
 #define BCM6362_CHIP_ID		0x6362		/* 6362 chipcommon chipid */
 #define BCM4314_CHIP_ID		0x4314		/* 4314 chipcommon chipid */
 #define BCM43142_CHIP_ID	43142		/* 43142 chipcommon chipid */
+<<<<<<< HEAD
 #define	BCM4324_CHIP_ID		0x4324		/* 4324 chipcommon chipid */
 #define	BCM43242_CHIP_ID	43242		/* 43242 chipcommon chipid */
 #define BCM4334_CHIP_ID		0x4334		/* 4334 chipcommon chipid */
@@ -270,11 +357,50 @@
 #define BCM43342_CHIP_ID	43342		/* 43342 chipcommon chipid */
 
 #define BCM4335_CHIP_ID         0x4335
+=======
+#define BCM43143_CHIP_ID	43143		/* 43143 chipcommon chipid */
+#define	BCM4324_CHIP_ID		0x4324		/* 4324 chipcommon chipid */
+#define	BCM43242_CHIP_ID	43242		/* 43242 chipcommon chipid */
+#define	BCM43243_CHIP_ID	43243		/* 43243 chipcommon chipid */
+#define BCM4334_CHIP_ID		0x4334		/* 4334 chipcommon chipid */
+#define BCM4335_CHIP_ID		0x4335		/* 4335 chipcommon chipid */
+#define BCM4339_CHIP_ID		0x4339		/* 4339 chipcommon chipid */
+#define BCM43349_CHIP_ID	43349			/* 43349(0xA955) chipcommon chipid */
+#define BCM4360_CHIP_ID		0x4360          /* 4360 chipcommon chipid */
+#define BCM4352_CHIP_ID		0x4352          /* 4352 chipcommon chipid */
+#define BCM43526_CHIP_ID	0xAA06
+#define BCM43340_CHIP_ID	43340		/* 43340 chipcommon chipid */
+#define BCM43341_CHIP_ID	43341		/* 43341 chipcommon chipid */
+#define BCM43342_CHIP_ID	43342		/* 43342 chipcommon chipid */
+#define BCM4350_CHIP_ID		0x4350          /* 4350 chipcommon chipid */
+#define BCM4354_CHIP_ID		0x4354          /* 4354 chipcommon chipid */
+#define BCM43556_CHIP_ID	0xAA24          /* 43556 chipcommon chipid */
+#define BCM43558_CHIP_ID	0xAA26          /* 43558 chipcommon chipid */
+#define BCM43566_CHIP_ID	0xAA2E          /* 43566 chipcommon chipid */
+#define BCM43568_CHIP_ID	0xAA30          /* 43568 chipcommon chipid */
+#define BCM43569_CHIP_ID	0xAA31          /* 43569 chipcommon chipid */
+#define BCM4350_CHIP(chipid)	((CHIPID(chipid) == BCM4350_CHIP_ID) || \
+				(CHIPID(chipid) == BCM4354_CHIP_ID) || \
+				(CHIPID(chipid) == BCM43556_CHIP_ID) || \
+				(CHIPID(chipid) == BCM43558_CHIP_ID) || \
+				(CHIPID(chipid) == BCM43566_CHIP_ID) || \
+				(CHIPID(chipid) == BCM43568_CHIP_ID) || \
+				(CHIPID(chipid) == BCM43569_CHIP_ID)) /* 4350 variations */
+#define BCM4345_CHIP_ID		0x4345		/* 4345 chipcommon chipid */
+
+#define BCM43602_CHIP_ID	0xaa52		/* 43602 chipcommon chipid */
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 #define	BCM4342_CHIP_ID		4342		/* 4342 chipcommon chipid (OTP, RBBU) */
 #define	BCM4402_CHIP_ID		0x4402		/* 4402 chipid */
 #define	BCM4704_CHIP_ID		0x4704		/* 4704 chipcommon chipid */
 #define	BCM4706_CHIP_ID		0x5300		/* 4706 chipcommon chipid */
+<<<<<<< HEAD
+=======
+#define BCM4707_CHIP_ID		53010		/* 4707 chipcommon chipid */
+#define BCM53018_CHIP_ID	53018		/* 53018 chipcommon chipid */
+#define BCM4707_CHIP(chipid)	(((chipid) == BCM4707_CHIP_ID) || ((chipid) == BCM53018_CHIP_ID))
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #define	BCM4710_CHIP_ID		0x4710		/* 4710 chipid */
 #define	BCM4712_CHIP_ID		0x4712		/* 4712 chipcommon chipid */
 #define	BCM4716_CHIP_ID		0x4716		/* 4716 chipcommon chipid */
@@ -336,16 +462,36 @@
 #define BCM4314SDIO_FPBGA_PKG_ID	(8 | 4)	/* 4314 FpBGA SDIO package id */
 #define BCM4314DEV_PKG_ID		(8 | 6)	/* 4314 Developement package id */
 
+<<<<<<< HEAD
 #define PCIXX21_FLASHMEDIA0_ID	0x8033		/* TI PCI xx21 Standard Host Controller */
 #define PCIXX21_SDIOH0_ID	0x8034		/* TI PCI xx21 Standard Host Controller */
 
+=======
+#define BCM4707_PKG_ID		1		/* 4707 package id */
+#define BCM4708_PKG_ID		2		/* 4708 package id */
+#define BCM4709_PKG_ID		0		/* 4709 package id */
+
+#define PCIXX21_FLASHMEDIA0_ID	0x8033		/* TI PCI xx21 Standard Host Controller */
+#define PCIXX21_SDIOH0_ID	0x8034		/* TI PCI xx21 Standard Host Controller */
+
+#define BCM4335_WLCSP_PKG_ID	(0x0)	/* WLCSP Module/Mobile SDIO/HSIC. */
+#define BCM4335_FCBGA_PKG_ID	(0x1)	/* FCBGA PC/Embeded/Media PCIE/SDIO */
+#define BCM4335_WLBGA_PKG_ID	(0x2)	/* WLBGA COB/Mobile SDIO/HSIC. */
+#define BCM4335_FCBGAD_PKG_ID	(0x3)	/* FCBGA Debug Debug/Dev All if's. */
+#define BCM4335_PKG_MASK	(0x3)
+
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 /* boardflags */
 #define	BFL_BTC2WIRE		0x00000001  /* old 2wire Bluetooth coexistence, OBSOLETE */
 #define BFL_BTCOEX      0x00000001      /* Board supports BTCOEX */
 #define	BFL_PACTRL		0x00000002  /* Board has gpio 9 controlling the PA */
 #define BFL_AIRLINEMODE	0x00000004  /* Board implements gpio 13 radio disable indication, UNUSED */
 #define	BFL_ADCDIV		0x00000008  /* Board has the rssi ADC divider */
+<<<<<<< HEAD
 #define	BFL_RFPLL	        0x00000008  /* ACPHY: Changing RFPLL BW to be 150 MHz */
+=======
+#define BFL_DIS_256QAM		0x00000008
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #define	BFL_ENETROBO		0x00000010  /* Board has robo switch or core */
 #define	BFL_NOPLLDOWN		0x00000020  /* Not ok to power down the chip pll and oscillator */
 #define	BFL_CCKHIPWR		0x00000040  /* Can do high-power CCK transmission */
@@ -373,6 +519,10 @@
 #define BFL_UCPWRCTL_MININDX	0x08000000  /* Enforce min power index to avoid FEM damage */
 #define BFL_EXTLNA_5GHz		0x10000000  /* Board has an external LNA in 5GHz band */
 #define BFL_TRSW_1by2		0x20000000  /* Board has 2 TRSW's in 1by2 designs */
+<<<<<<< HEAD
+=======
+#define BFL_GAINBOOSTA01        0x20000000  /* 5g Gainboost for core0 and core1 */
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #define BFL_LO_TRSW_R_5GHz	0x40000000  /* In 5G do not throw TRSW to T for clipLO gain */
 #define BFL_ELNA_GAINDEF	0x80000000  /* Backoff InitGain based on elna_2g/5g field
 					     * when this flag is set
@@ -399,6 +549,10 @@
 #define BFL2_2G_SPUR_WAR	0x00002000  /* WAR to reduce and avoid clock-harmonic spurs in 2G */
 #define BFL2_BPHY_ALL_TXCORES	0x00004000  /* Transmit bphy frames using all tx cores */
 #define BFL2_FCC_BANDEDGE_WAR	0x00008000  /* Activates WAR to improve FCC bandedge performance */
+<<<<<<< HEAD
+=======
+#define BFL2_DAC_SPUR_IMPROVEMENT 0x00008000       /* Reducing DAC Spurs */
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #define BFL2_GPLL_WAR2	        0x00010000  /* Flag to widen G-band PLL loop b/w */
 #define BFL2_IPALVLSHIFT_3P3    0x00020000
 #define BFL2_INTERNDET_TXIQCAL  0x00040000  /* Use internal envelope detector for TX IQCAL */
@@ -421,7 +575,73 @@
 						/* ucode control of eLNA during Tx */
 #define BFL2_4313_RADIOREG	0x10000000
 									   /*  board rework */
+<<<<<<< HEAD
 #define BFL2_SDR_EN		0x20000000	/* SDR enabled or disabled */
+=======
+#define BFL2_DYNAMIC_VMID	0x10000000  /* enable dynamic Vmid in idle TSSI CAL for 4331 */
+
+#define BFL2_SDR_EN		0x20000000  /* SDR enabled or disabled */
+#define BFL2_DYNAMIC_VMID	0x10000000  /* boardflag to enable dynamic Vmid idle TSSI CAL */
+#define BFL2_LNA1BYPFORTR2G	0x40000000  /* acphy, enable lna1 bypass for clip gain, 2g */
+#define BFL2_LNA1BYPFORTR5G	0x80000000  /* acphy, enable lna1 bypass for clip gain, 5g */
+
+/* SROM 11 - 11ac boardflag definitions */
+#define BFL_SROM11_BTCOEX  0x00000001  /* Board supports BTCOEX */
+#define BFL_SROM11_WLAN_BT_SH_XTL  0x00000002  /* bluetooth and wlan share same crystal */
+#define BFL_SROM11_EXTLNA	0x00001000  /* Board has an external LNA in 2.4GHz band */
+#define BFL_SROM11_EXTLNA_5GHz	0x10000000  /* Board has an external LNA in 5GHz band */
+#define BFL_SROM11_GAINBOOSTA01	0x20000000  /* 5g Gainboost for core0 and core1 */
+#define BFL2_SROM11_APLL_WAR	0x00000002  /* Flag to implement alternative A-band PLL settings */
+#define BFL2_SROM11_ANAPACTRL_2G  0x00100000  /* 2G ext PAs are ctrl-ed by analog PA ctrl lines */
+#define BFL2_SROM11_ANAPACTRL_5G  0x00200000  /* 5G ext PAs are ctrl-ed by analog PA ctrl lines */
+#define BFL2_SROM11_SINGLEANT_CCK	0x00001000  /* Tx CCK pkts on Ant 0 only */
+
+/* boardflags3 */
+#define BFL3_FEMCTRL_SUB	  0x00000007  /* acphy, subrevs of femctrl on top of srom_femctrl */
+#define BFL3_RCAL_WAR		  0x00000008  /* acphy, rcal war active on this board (4335a0) */
+#define BFL3_TXGAINTBLID	  0x00000070  /* acphy, txgain table id */
+#define BFL3_TXGAINTBLID_SHIFT	  0x4         /* acphy, txgain table id shift bit */
+#define BFL3_TSSI_DIV_WAR	  0x00000080  /* acphy, Seperate paparam for 20/40/80 */
+#define BFL3_TSSI_DIV_WAR_SHIFT	  0x7         /* acphy, Seperate paparam for 20/40/80 shift bit */
+#define BFL3_FEMTBL_FROM_NVRAM    0x00000100  /* acphy, femctrl table is read from nvram */
+#define BFL3_FEMTBL_FROM_NVRAM_SHIFT 0x8         /* acphy, femctrl table is read from nvram */
+#define BFL3_AGC_CFG_2G           0x00000200  /* acphy, gain control configuration for 2G */
+#define BFL3_AGC_CFG_5G           0x00000400  /* acphy, gain control configuration for 5G */
+#define BFL3_PPR_BIT_EXT          0x00000800  /* acphy, bit position for 1bit extension for ppr */
+#define BFL3_PPR_BIT_EXT_SHIFT    11          /* acphy, bit shift for 1bit extension for ppr */
+#define BFL3_BBPLL_SPR_MODE_DIS	  0x00001000  /* acphy, disables bbpll spur modes */
+#define BFL3_RCAL_OTP_VAL_EN      0x00002000  /* acphy, to read rcal_trim value from otp */
+#define BFL3_2GTXGAINTBL_BLANK	  0x00004000  /* acphy, blank the first X ticks of 2g gaintbl */
+#define BFL3_2GTXGAINTBL_BLANK_SHIFT 14       /* acphy, blank the first X ticks of 2g gaintbl */
+#define BFL3_5GTXGAINTBL_BLANK	  0x00008000  /* acphy, blank the first X ticks of 5g gaintbl */
+#define BFL3_5GTXGAINTBL_BLANK_SHIFT 15       /* acphy, blank the first X ticks of 5g gaintbl */
+#define BFL3_PHASETRACK_MAX_ALPHABETA	  0x00010000  /* acphy, to max out alpha,beta to 511 */
+#define BFL3_PHASETRACK_MAX_ALPHABETA_SHIFT 16       /* acphy, to max out alpha,beta to 511 */
+/* acphy, to use backed off gaintbl for lte-coex */
+#define BFL3_LTECOEX_GAINTBL_EN           0x00060000
+/* acphy, to use backed off gaintbl for lte-coex */
+#define BFL3_LTECOEX_GAINTBL_EN_SHIFT 17
+#define BFL3_5G_SPUR_WAR          0x00080000  /* acphy, enable spur WAR in 5G band */
+
+/* acphy: lpmode2g and lpmode_5g related boardflags */
+#define BFL3_ACPHY_LPMODE_2G	  0x00300000  /* bits 20:21 for lpmode_2g choice */
+#define BFL3_ACPHY_LPMODE_2G_SHIFT	  20
+
+#define BFL3_ACPHY_LPMODE_5G	  0x00C00000  /* bits 22:23 for lpmode_5g choice */
+#define BFL3_ACPHY_LPMODE_5G_SHIFT	  22
+
+#define BFL3_EXT_LPO_ISCLOCK      0x02000000  /* External LPO is clock, not x-tal */
+#define BFL3_FORCE_INT_LPO_SEL    0x04000000  /* Force internal lpo */
+#define BFL3_FORCE_EXT_LPO_SEL    0x08000000  /* Force external lpo */
+
+#define BFL3_EN_BRCM_IMPBF        0x10000000  /* acphy, Allow BRCM Implicit TxBF */
+#define BFL3_AVVMID_FROM_NVRAM    0x40000000  /* Read Av Vmid from NVRAM  */
+#define BFL3_VLIN_EN_FROM_NVRAM    0x80000000  /* Read Vlin En from NVRAM  */
+
+#define BFL3_AVVMID_FROM_NVRAM_SHIFT   30   /* Read Av Vmid from NVRAM  */
+#define BFL3_VLIN_EN_FROM_NVRAM_SHIFT   31   /* Enable Vlin  from NVRAM  */
+
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 /* board specific GPIO assignment, gpio 0-3 are also customer-configurable led */
 #define	BOARD_GPIO_BTC3W_IN	0x850	/* bit 4 is RF_ACTIVE, bit 6 is STATUS, bit 11 is PRI */
@@ -438,6 +658,10 @@
 #define BOARD_GPIO_BTC4_STAT	0x4000	/* gpio 14, coex4, status */
 #define BOARD_GPIO_BTC4_WLAN	0x8000	/* gpio 15, coex4, wlan active */
 #define	BOARD_GPIO_1_WLAN_PWR	0x02	/* throttle WLAN power on X21 board */
+<<<<<<< HEAD
+=======
+#define	BOARD_GPIO_2_WLAN_PWR	0x04	/* throttle WLAN power on X29C board */
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #define	BOARD_GPIO_3_WLAN_PWR	0x08	/* throttle WLAN power on X28 board */
 #define	BOARD_GPIO_4_WLAN_PWR	0x10	/* throttle WLAN power on X19 board */
 
@@ -464,9 +688,22 @@
 /* 43341 Boards */
 #define BCM943341WLABGS_SSID	0x062d
 
+<<<<<<< HEAD
 /* # of GPIO pins */
 #define GPIO_NUMPINS		32
 
+=======
+/* 43342 Boards */
+#define BCM943342FCAGBI_SSID	0x0641
+
+/* 43602 Boards, unclear yet what boards will be created. */
+#define BCM943602RSVD1_SSID	0x06a5
+#define BCM943602RSVD2_SSID	0x06a6
+
+/* # of GPIO pins */
+#define GPIO_NUMPINS		32
+
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 /* These values are used by dhd host driver. */
 #define RDL_RAM_BASE_4319 0x60000000
 #define RDL_RAM_BASE_4329 0x60000000
@@ -478,8 +715,23 @@
 #define RDL_RAM_BASE_4328 0x80000000
 #define RDL_RAM_SIZE_4322 0x60000
 #define RDL_RAM_BASE_4322 0x60000000
+<<<<<<< HEAD
 
 /* generic defs for nvram "muxenab" bits */
+=======
+#define RDL_RAM_SIZE_4360  0xA0000
+#define RDL_RAM_BASE_4360  0x60000000
+#define RDL_RAM_SIZE_43242  0x90000
+#define RDL_RAM_BASE_43242  0x60000000
+#define RDL_RAM_SIZE_43143  0x70000
+#define RDL_RAM_BASE_43143  0x60000000
+#define RDL_RAM_SIZE_4350  0xC0000
+#define RDL_RAM_BASE_4350  0x180800
+
+/* generic defs for nvram "muxenab" bits
+* Note: these differ for 4335a0. refer bcmchipc.h for specific mux options.
+*/
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #define MUXENAB_UART		0x00000001
 #define MUXENAB_GPIO		0x00000002
 #define MUXENAB_ERCX		0x00000004	/* External Radio BT coex */

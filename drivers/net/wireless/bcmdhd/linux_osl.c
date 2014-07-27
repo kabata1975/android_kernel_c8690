@@ -1,7 +1,7 @@
 /*
  * Linux OS Independent Layer
  *
- * Copyright (C) 1999-2012, Broadcom Corporation
+ * Copyright (C) 1999-2014, Broadcom Corporation
  * 
  *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -21,7 +21,11 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
+<<<<<<< HEAD
  * $Id: linux_osl.c 373382 2012-12-07 07:59:52Z $
+=======
+ * $Id: linux_osl.c 451649 2014-01-27 17:23:38Z $
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
  */
 
 #define LINUX_PORT
@@ -30,21 +34,29 @@
 #include <bcmendian.h>
 #include <linuxver.h>
 #include <bcmdefs.h>
+
+
 #include <osl.h>
 #include <bcmutils.h>
 #include <linux/delay.h>
 #include <pcicfg.h>
 
 
+
 #include <linux/fs.h>
 
-#define PCI_CFG_RETRY 		10
+#define PCI_CFG_RETRY		10
 
 #define OS_HANDLE_MAGIC		0x1234abcd	/* Magic # to recognize osh */
+<<<<<<< HEAD
 #define BCM_MEM_FILENAME_LEN 	24		/* Mem. filename length */
+=======
+#define BCM_MEM_FILENAME_LEN	24		/* Mem. filename length */
+#define DUMPBUFSZ 1024
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 #ifdef CONFIG_DHD_USE_STATIC_BUF
-#define DHD_SKB_HDRSIZE 		336
+#define DHD_SKB_HDRSIZE		336
 #define DHD_SKB_1PAGE_BUFSIZE	((PAGE_SIZE*1)-DHD_SKB_HDRSIZE)
 #define DHD_SKB_2PAGE_BUFSIZE	((PAGE_SIZE*2)-DHD_SKB_HDRSIZE)
 #define DHD_SKB_4PAGE_BUFSIZE	((PAGE_SIZE*4)-DHD_SKB_HDRSIZE)
@@ -81,6 +93,11 @@ typedef struct bcm_static_pkt {
 } bcm_static_pkt_t;
 
 static bcm_static_pkt_t *bcm_static_skb = 0;
+<<<<<<< HEAD
+=======
+
+void* wifi_platform_prealloc(void *adapter, int section, unsigned long size);
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #endif /* CONFIG_DHD_USE_STATIC_BUF */
 
 typedef struct bcm_mem_link {
@@ -92,6 +109,16 @@ typedef struct bcm_mem_link {
 	char	file[BCM_MEM_FILENAME_LEN];
 } bcm_mem_link_t;
 
+struct osl_cmn_info {
+	atomic_t malloced;
+	atomic_t pktalloced;    /* Number of allocated packet buffers */
+	spinlock_t dbgmem_lock;
+	bcm_mem_link_t *dbgmem_list;
+	spinlock_t pktalloc_lock;
+	atomic_t refcount; /* Number of references to this shared structure. */
+};
+typedef struct osl_cmn_info osl_cmn_t;
+
 struct osl_info {
 	osl_pubinfo_t pub;
 #ifdef CTFPOOL
@@ -99,16 +126,30 @@ struct osl_info {
 #endif /* CTFPOOL */
 	uint magic;
 	void *pdev;
-	atomic_t malloced;
 	uint failed;
 	uint bustype;
-	bcm_mem_link_t *dbgmem_list;
-	spinlock_t dbgmem_lock;
-	spinlock_t pktalloc_lock;
+	osl_cmn_t *cmn; /* Common OSL related data shred between two OSH's */
+
+<<<<<<< HEAD
+/* PCMCIA attribute space access macros */
+
+=======
+	void *bus_handle;
 };
+
+#define OSL_PKTTAG_CLEAR(p) \
+do { \
+	struct sk_buff *s = (struct sk_buff *)(p); \
+	ASSERT(OSL_PKTTAG_SZ == 32); \
+	*(uint32 *)(&s->cb[0]) = 0; *(uint32 *)(&s->cb[4]) = 0; \
+	*(uint32 *)(&s->cb[8]) = 0; *(uint32 *)(&s->cb[12]) = 0; \
+	*(uint32 *)(&s->cb[16]) = 0; *(uint32 *)(&s->cb[20]) = 0; \
+	*(uint32 *)(&s->cb[24]) = 0; *(uint32 *)(&s->cb[28]) = 0; \
+} while (0)
 
 /* PCMCIA attribute space access macros */
 
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 /* Global ASSERT type flag */
 uint32 g_assert_type = FALSE;
 
@@ -156,12 +197,29 @@ static int16 linuxbcmerrormap[] =
 	-ENODEV,		/* BCME_NODEVICE */
 	-EINVAL,		/* BCME_NMODE_DISABLED */
 	-ENODATA,		/* BCME_NONRESIDENT */
+<<<<<<< HEAD
+=======
+	-EINVAL,		/* BCME_SCANREJECT */
+	-EINVAL,		/* BCME_USAGE_ERROR */
+	-EIO,     		/* BCME_IOCTL_ERROR */
+	-EIO,			/* BCME_SERIAL_PORT_ERR */
+	-EOPNOTSUPP,	/* BCME_DISABLED, BCME_NOTENABLED */
+	-EIO,			/* BCME_DECERR */
+	-EIO,			/* BCME_ENCERR */
+	-EIO,			/* BCME_MICERR */
+	-ERANGE,		/* BCME_REPLAY */
+	-EINVAL,		/* BCME_IE_NOTFOUND */
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 /* When an new error code is added to bcmutils.h, add os
  * specific error translation here as well
  */
 /* check if BCME_LAST changed since the last time this function was updated */
+<<<<<<< HEAD
 #if BCME_LAST != -42
+=======
+#if BCME_LAST != -52
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #error "You need to add a OS error translation in the linuxbcmerrormap \
 	for new error code defined in bcmutils.h"
 #endif
@@ -179,32 +237,57 @@ osl_error(int bcmerror)
 	/* Array bounds covered by ASSERT in osl_attach */
 	return linuxbcmerrormap[-bcmerror];
 }
-
-extern uint8* dhd_os_prealloc(void *osh, int section, int size);
-
+#ifdef SHARED_OSL_CMN
+osl_t *
+osl_attach(void *pdev, uint bustype, bool pkttag, void **osl_cmn)
+{
+#else
 osl_t *
 osl_attach(void *pdev, uint bustype, bool pkttag)
 {
+	void **osl_cmn = NULL;
+#endif /* SHARED_OSL_CMN */
 	osl_t *osh;
+	gfp_t flags;
 
-	if (!(osh = kmalloc(sizeof(osl_t), GFP_ATOMIC)))
+	flags = CAN_SLEEP() ? GFP_KERNEL: GFP_ATOMIC;
+	if (!(osh = kmalloc(sizeof(osl_t), flags)))
 		return osh;
 
 	ASSERT(osh);
 
 	bzero(osh, sizeof(osl_t));
 
+<<<<<<< HEAD
+=======
+	if (osl_cmn == NULL || *osl_cmn == NULL) {
+		if (!(osh->cmn = kmalloc(sizeof(osl_cmn_t), flags))) {
+			kfree(osh);
+			return NULL;
+		}
+		bzero(osh->cmn, sizeof(osl_cmn_t));
+		if (osl_cmn)
+			*osl_cmn = osh->cmn;
+		atomic_set(&osh->cmn->malloced, 0);
+		osh->cmn->dbgmem_list = NULL;
+		spin_lock_init(&(osh->cmn->dbgmem_lock));
+
+		spin_lock_init(&(osh->cmn->pktalloc_lock));
+
+	} else {
+		osh->cmn = *osl_cmn;
+	}
+	atomic_add(1, &osh->cmn->refcount);
+
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 	/* Check that error map has the right number of entries in it */
 	ASSERT(ABS(BCME_LAST) == (ARRAYSIZE(linuxbcmerrormap) - 1));
 
-	osh->magic = OS_HANDLE_MAGIC;
-	atomic_set(&osh->malloced, 0);
 	osh->failed = 0;
-	osh->dbgmem_list = NULL;
-	spin_lock_init(&(osh->dbgmem_lock));
 	osh->pdev = pdev;
 	osh->pub.pkttag = pkttag;
 	osh->bustype = bustype;
+	osh->magic = OS_HANDLE_MAGIC;
 
 	switch (bustype) {
 		case PCI_BUS:
@@ -224,39 +307,72 @@ osl_attach(void *pdev, uint bustype, bool pkttag)
 			break;
 	}
 
+
+
+	return osh;
+}
+
+int osl_static_mem_init(osl_t *osh, void *adapter)
+{
 #if defined(CONFIG_DHD_USE_STATIC_BUF)
-	if (!bcm_static_buf) {
-		if (!(bcm_static_buf = (bcm_static_buf_t *)dhd_os_prealloc(osh, 3, STATIC_BUF_SIZE+
-			STATIC_BUF_TOTAL_LEN))) {
-			printk("can not alloc static buf!\n");
+		if (!bcm_static_buf && adapter) {
+			if (!(bcm_static_buf = (bcm_static_buf_t *)wifi_platform_prealloc(adapter,
+				3, STATIC_BUF_SIZE + STATIC_BUF_TOTAL_LEN))) {
+				printk("can not alloc static buf!\n");
+				bcm_static_skb = NULL;
+				ASSERT(osh->magic == OS_HANDLE_MAGIC);
+				kfree(osh);
+				return -ENOMEM;
+			}
+			else
+				printk("alloc static buf at %x!\n", (unsigned int)bcm_static_buf);
+
+
+			sema_init(&bcm_static_buf->static_sem, 1);
+
+			bcm_static_buf->buf_ptr = (unsigned char *)bcm_static_buf + STATIC_BUF_SIZE;
 		}
-		else
-			printk("alloc static buf at %x!\n", (unsigned int)bcm_static_buf);
 
+		if (!bcm_static_skb && adapter) {
+			int i;
+			void *skb_buff_ptr = 0;
+			bcm_static_skb = (bcm_static_pkt_t *)((char *)bcm_static_buf + 2048);
+			skb_buff_ptr = wifi_platform_prealloc(adapter, 4, 0);
+			if (!skb_buff_ptr) {
+				printk("cannot alloc static buf!\n");
+				bcm_static_buf = NULL;
+				bcm_static_skb = NULL;
+				ASSERT(osh->magic == OS_HANDLE_MAGIC);
+				kfree(osh);
+				return -ENOMEM;
+			}
 
-		sema_init(&bcm_static_buf->static_sem, 1);
-
-		bcm_static_buf->buf_ptr = (unsigned char *)bcm_static_buf + STATIC_BUF_SIZE;
-	}
-
-	if (!bcm_static_skb) {
-		int i;
-		void *skb_buff_ptr = 0;
-		bcm_static_skb = (bcm_static_pkt_t *)((char *)bcm_static_buf + 2048);
-		skb_buff_ptr = dhd_os_prealloc(osh, 4, 0);
-
-		bcopy(skb_buff_ptr, bcm_static_skb, sizeof(struct sk_buff *)*
-			(STATIC_PKT_MAX_NUM * 2 + STATIC_PKT_4PAGE_NUM));
-		for (i = 0; i < (STATIC_PKT_MAX_NUM * 2 + STATIC_PKT_4PAGE_NUM); i++)
-			bcm_static_skb->pkt_use[i] = 0;
-
+<<<<<<< HEAD
 		sema_init(&bcm_static_skb->osl_pkt_sem, 1);
 	}
 #endif /* CONFIG_DHD_USE_STATIC_BUF */
+=======
+			bcopy(skb_buff_ptr, bcm_static_skb, sizeof(struct sk_buff *) *
+				(STATIC_PKT_MAX_NUM * 2 + STATIC_PKT_4PAGE_NUM));
+			for (i = 0; i < STATIC_PKT_MAX_NUM * 2 + STATIC_PKT_4PAGE_NUM; i++)
+				bcm_static_skb->pkt_use[i] = 0;
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
-	spin_lock_init(&(osh->pktalloc_lock));
+			sema_init(&bcm_static_skb->osl_pkt_sem, 1);
+		}
+#endif /* CONFIG_DHD_USE_STATIC_BUF */
 
-	return osh;
+	return 0;
+}
+
+void osl_set_bus_handle(osl_t *osh, void *bus_handle)
+{
+	osh->bus_handle = bus_handle;
+}
+
+void* osl_get_bus_handle(osl_t *osh)
+{
+	return osh->bus_handle;
 }
 
 void
@@ -265,26 +381,40 @@ osl_detach(osl_t *osh)
 	if (osh == NULL)
 		return;
 
-#ifdef CONFIG_DHD_USE_STATIC_BUF
-		if (bcm_static_buf) {
-			bcm_static_buf = 0;
-		}
-		if (bcm_static_skb) {
-			bcm_static_skb = 0;
-		}
-#endif
-
 	ASSERT(osh->magic == OS_HANDLE_MAGIC);
+	atomic_sub(1, &osh->cmn->refcount);
+	if (atomic_read(&osh->cmn->refcount) == 0) {
+			kfree(osh->cmn);
+	}
 	kfree(osh);
 }
 
-static struct sk_buff *osl_alloc_skb(unsigned int len)
+int osl_static_mem_deinit(osl_t *osh, void *adapter)
 {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 25)
-	return __dev_alloc_skb(len, GFP_ATOMIC);
-#else
-	return dev_alloc_skb(len);
+#ifdef CONFIG_DHD_USE_STATIC_BUF
+	if (bcm_static_buf) {
+		bcm_static_buf = 0;
+	}
+	if (bcm_static_skb) {
+		bcm_static_skb = 0;
+	}
 #endif
+	return 0;
+}
+
+static struct sk_buff *osl_alloc_skb(osl_t *osh, unsigned int len)
+{
+	struct sk_buff *skb;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 25)
+	gfp_t flags = (in_atomic() || irqs_disabled()) ? GFP_ATOMIC : GFP_KERNEL;
+#if defined(CONFIG_SPARSEMEM) && defined(CONFIG_ZONE_DMA)
+	flags |= GFP_ATOMIC;
+#endif
+	skb = __dev_alloc_skb(len, flags);
+#else
+	skb = dev_alloc_skb(len);
+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 25) */
+	return skb;
 }
 
 #ifdef CTFPOOL
@@ -320,7 +450,11 @@ osl_ctfpool_add(osl_t *osh)
 	}
 
 	/* Allocate a new skb and add it to the ctfpool */
+<<<<<<< HEAD
 	skb = osl_alloc_skb(osh->ctfpool->obj_size);
+=======
+	skb = osl_alloc_skb(osh, osh->ctfpool->obj_size);
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 	if (skb == NULL) {
 		printf("%s: skb alloc of len %d failed\n", __FUNCTION__,
 		       osh->ctfpool->obj_size);
@@ -367,9 +501,11 @@ osl_ctfpool_replenish(osl_t *osh, uint thresh)
 int32
 osl_ctfpool_init(osl_t *osh, uint numobj, uint size)
 {
-	osh->ctfpool = kmalloc(sizeof(ctfpool_t), GFP_ATOMIC);
+	gfp_t flags;
+
+	flags = CAN_SLEEP() ? GFP_KERNEL: GFP_ATOMIC;
+	osh->ctfpool = kzalloc(sizeof(ctfpool_t), flags);
 	ASSERT(osh->ctfpool);
-	bzero(osh->ctfpool, sizeof(ctfpool_t));
 
 	osh->ctfpool->max_obj = numobj;
 	osh->ctfpool->obj_size = size;
@@ -469,6 +605,11 @@ osl_pktfastget(osl_t *osh, uint len)
 		return NULL;
 	}
 
+	if (len > osh->ctfpool->obj_size) {
+		CTFPOOL_UNLOCK(osh->ctfpool, flags);
+		return NULL;
+	}
+
 	ASSERT(len <= osh->ctfpool->obj_size);
 
 	/* Get an object from ctfpool */
@@ -484,13 +625,16 @@ osl_pktfastget(osl_t *osh, uint len)
 	skb->next = skb->prev = NULL;
 	skb->data = skb->head + 16;
 	skb->tail = skb->head + 16;
-
 	skb->len = 0;
 	skb->cloned = 0;
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 14)
 	skb->list = NULL;
 #endif
 	atomic_set(&skb->users, 1);
+
+	PKTSETCLINK(skb, NULL);
+	PKTCCLRATTR(skb);
+	PKTFAST(osh, skb) &= ~(CTFBUF | SKIPCT | CHAINED);
 
 	return skb;
 }
@@ -503,22 +647,24 @@ osl_pktfastget(osl_t *osh, uint len)
 struct sk_buff * BCMFASTPATH
 osl_pkt_tonative(osl_t *osh, void *pkt)
 {
-#ifndef WL_UMK
 	struct sk_buff *nskb;
-	unsigned long flags;
-#endif
 
 	if (osh->pub.pkttag)
-		bzero((void*)((struct sk_buff *)pkt)->cb, OSL_PKTTAG_SZ);
+		OSL_PKTTAG_CLEAR(pkt);
 
+<<<<<<< HEAD
 #ifndef WL_UMK
+=======
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 	/* Decrement the packet counter */
 	for (nskb = (struct sk_buff *)pkt; nskb; nskb = nskb->next) {
-		spin_lock_irqsave(&osh->pktalloc_lock, flags);
-		osh->pub.pktalloced--;
-		spin_unlock_irqrestore(&osh->pktalloc_lock, flags);
+		atomic_sub(PKTISCHAINED(nskb) ? PKTCCNT(nskb) : 1, &osh->cmn->pktalloced);
+
 	}
+<<<<<<< HEAD
 #endif /* WL_UMK */
+=======
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 	return (struct sk_buff *)pkt;
 }
 
@@ -529,22 +675,24 @@ osl_pkt_tonative(osl_t *osh, void *pkt)
 void * BCMFASTPATH
 osl_pkt_frmnative(osl_t *osh, void *pkt)
 {
-#ifndef WL_UMK
 	struct sk_buff *nskb;
-	unsigned long flags;
-#endif
 
 	if (osh->pub.pkttag)
-		bzero((void*)((struct sk_buff *)pkt)->cb, OSL_PKTTAG_SZ);
+		OSL_PKTTAG_CLEAR(pkt);
 
+<<<<<<< HEAD
 #ifndef WL_UMK
+=======
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 	/* Increment the packet counter */
 	for (nskb = (struct sk_buff *)pkt; nskb; nskb = nskb->next) {
-		spin_lock_irqsave(&osh->pktalloc_lock, flags);
-		osh->pub.pktalloced++;
-		spin_unlock_irqrestore(&osh->pktalloc_lock, flags);
+		atomic_add(PKTISCHAINED(nskb) ? PKTCCNT(nskb) : 1, &osh->cmn->pktalloced);
+
 	}
+<<<<<<< HEAD
 #endif /* WL_UMK */
+=======
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 	return (void *)pkt;
 }
 
@@ -553,22 +701,27 @@ void * BCMFASTPATH
 osl_pktget(osl_t *osh, uint len)
 {
 	struct sk_buff *skb;
-	unsigned long flags;
 
 #ifdef CTFPOOL
 	/* Allocate from local pool */
 	skb = osl_pktfastget(osh, len);
+<<<<<<< HEAD
 	if ((skb != NULL) || ((skb = osl_alloc_skb(len)) != NULL)) {
 #else /* CTFPOOL */
 	if ((skb = osl_alloc_skb(len))) {
 #endif /* CTFPOOL */
 		skb_put(skb, len);
+=======
+	if ((skb != NULL) || ((skb = osl_alloc_skb(osh, len)) != NULL)) {
+#else /* CTFPOOL */
+	if ((skb = osl_alloc_skb(osh, len))) {
+#endif /* CTFPOOL */
+		skb->tail += len;
+		skb->len  += len;
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 		skb->priority = 0;
 
-
-		spin_lock_irqsave(&osh->pktalloc_lock, flags);
-		osh->pub.pktalloced++;
-		spin_unlock_irqrestore(&osh->pktalloc_lock, flags);
+		atomic_inc(&osh->cmn->pktalloced);
 	}
 
 	return ((void*) skb);
@@ -591,10 +744,17 @@ osl_pktfastfree(osl_t *osh, struct sk_buff *skb)
 
 	/* We only need to init the fields that we change */
 	skb->dev = NULL;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 36)
 	skb->dst = NULL;
-	memset(skb->cb, 0, sizeof(skb->cb));
+#endif
+	OSL_PKTTAG_CLEAR(skb);
 	skb->ip_summed = 0;
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 36)
+	skb_orphan(skb);
+#else
 	skb->destructor = NULL;
+#endif
 
 	ctfpool = (ctfpool_t *)CTFPOOLPTR(osh, skb);
 	ASSERT(ctfpool != NULL);
@@ -617,7 +777,12 @@ void BCMFASTPATH
 osl_pktfree(osl_t *osh, void *p, bool send)
 {
 	struct sk_buff *skb, *nskb;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+	if (osh == NULL)
+		return;
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 	skb = (struct sk_buff*) p;
 
@@ -634,13 +799,23 @@ osl_pktfree(osl_t *osh, void *p, bool send)
 
 
 #ifdef CTFPOOL
-		if ((PKTISFAST(osh, skb)) && (atomic_read(&skb->users) == 1))
+		if (PKTISFAST(osh, skb)) {
+			if (atomic_read(&skb->users) == 1)
+				smp_rmb();
+			else if (!atomic_dec_and_test(&skb->users))
+				goto next_skb;
 			osl_pktfastfree(osh, skb);
+<<<<<<< HEAD
 		else {
 #else /* CTFPOOL */
 		{
 #endif /* CTFPOOL */
 
+=======
+		} else
+#endif
+		{
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 			if (skb->destructor)
 				/* cannot kfree_skb() on hard IRQ (net/core/skbuff.c) if
 				 * destructor exists
@@ -652,9 +827,10 @@ osl_pktfree(osl_t *osh, void *p, bool send)
 				 */
 				dev_kfree_skb(skb);
 		}
-		spin_lock_irqsave(&osh->pktalloc_lock, flags);
-		osh->pub.pktalloced--;
-		spin_unlock_irqrestore(&osh->pktalloc_lock, flags);
+#ifdef CTFPOOL
+next_skb:
+#endif
+		atomic_dec(&osh->cmn->pktalloced);
 		skb = nskb;
 	}
 }
@@ -666,10 +842,8 @@ osl_pktget_static(osl_t *osh, uint len)
 	int i = 0;
 	struct sk_buff *skb;
 
-
 	if (len > DHD_SKB_MAX_BUFSIZE) {
-		printk("osl_pktget_static: Do we really need this big skb??"
-			" len=%d\n", len);
+		printk("%s: attempt to allocate huge packet (0x%x)\n", __FUNCTION__, len);
 		return osl_pktget(osh, len);
 	}
 
@@ -694,7 +868,6 @@ osl_pktget_static(osl_t *osh, uint len)
 	}
 
 	if (len <= DHD_SKB_2PAGE_BUFSIZE) {
-
 		for (i = 0; i < STATIC_PKT_MAX_NUM; i++) {
 			if (bcm_static_skb->pkt_use[i + STATIC_PKT_MAX_NUM]
 				== 0)
@@ -726,7 +899,7 @@ osl_pktget_static(osl_t *osh, uint len)
 #endif
 
 	up(&bcm_static_skb->osl_pkt_sem);
-	printk("osl_pktget_static: all static pkt in use!\n");
+	printk("%s: all static pkt in use!\n", __FUNCTION__);
 	return osl_pktget(osh, len);
 }
 
@@ -757,15 +930,17 @@ osl_pktfree_static(osl_t *osh, void *p, bool send)
 	}
 #ifdef ENHANCED_STATIC_BUF
 	if (p == bcm_static_skb->skb_16k) {
-		bcm_static_skb->pkt_use[STATIC_PKT_MAX_NUM*2] = 0;
+		bcm_static_skb->pkt_use[STATIC_PKT_MAX_NUM * 2] = 0;
 		up(&bcm_static_skb->osl_pkt_sem);
 		return;
 	}
 #endif
 	up(&bcm_static_skb->osl_pkt_sem);
-
 	osl_pktfree(osh, p, send);
+<<<<<<< HEAD
 	return;
+=======
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 }
 #endif /* CONFIG_DHD_USE_STATIC_BUF */
 
@@ -825,7 +1000,11 @@ osl_pci_slot(osl_t *osh)
 {
 	ASSERT(osh && (osh->magic == OS_HANDLE_MAGIC) && osh->pdev);
 
+#if 0 > KERNEL_VERSION(2, 6, 35)
+	return PCI_SLOT(((struct pci_dev *)osh->pdev)->devfn) + 1;
+#else
 	return PCI_SLOT(((struct pci_dev *)osh->pdev)->devfn);
+#endif
 }
 
 /* return the pci device pointed by osh->pdev */
@@ -858,11 +1037,11 @@ void *
 osl_malloc(osl_t *osh, uint size)
 {
 	void *addr;
+	gfp_t flags;
 
 	/* only ASSERT if osh is defined */
 	if (osh)
 		ASSERT(osh->magic == OS_HANDLE_MAGIC);
-
 #ifdef CONFIG_DHD_USE_STATIC_BUF
 	if (bcm_static_buf)
 	{
@@ -889,7 +1068,7 @@ osl_malloc(osl_t *osh, uint size)
 
 			bzero(bcm_static_buf->buf_ptr+STATIC_BUF_SIZE*i, size);
 			if (osh)
-				atomic_add(size, &osh->malloced);
+				atomic_add(size, &osh->cmn->malloced);
 
 			return ((void *)(bcm_static_buf->buf_ptr+STATIC_BUF_SIZE*i));
 		}
@@ -897,15 +1076,30 @@ osl_malloc(osl_t *osh, uint size)
 original:
 #endif /* CONFIG_DHD_USE_STATIC_BUF */
 
-	if ((addr = kmalloc(size, GFP_ATOMIC)) == NULL) {
+	flags = CAN_SLEEP() ? GFP_KERNEL: GFP_ATOMIC;
+	if ((addr = kmalloc(size, flags)) == NULL) {
 		if (osh)
 			osh->failed++;
 		return (NULL);
 	}
-	if (osh)
-		atomic_add(size, &osh->malloced);
+	if (osh && osh->cmn)
+		atomic_add(size, &osh->cmn->malloced);
 
 	return (addr);
+}
+
+void *
+osl_mallocz(osl_t *osh, uint size)
+{
+	void *ptr;
+
+	ptr = osl_malloc(osh, size);
+
+	if (ptr != NULL) {
+		bzero(ptr, size);
+	}
+
+	return ptr;
 }
 
 void
@@ -925,26 +1119,43 @@ osl_mfree(osl_t *osh, void *addr, uint size)
 			bcm_static_buf->buf_use[buf_idx] = 0;
 			up(&bcm_static_buf->static_sem);
 
-			if (osh) {
+			if (osh && osh->cmn) {
 				ASSERT(osh->magic == OS_HANDLE_MAGIC);
-				atomic_sub(size, &osh->malloced);
+				atomic_sub(size, &osh->cmn->malloced);
 			}
 			return;
 		}
 	}
 #endif /* CONFIG_DHD_USE_STATIC_BUF */
+<<<<<<< HEAD
 	if (osh) {
+=======
+	if (osh && osh->cmn) {
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 		ASSERT(osh->magic == OS_HANDLE_MAGIC);
-		atomic_sub(size, &osh->malloced);
+
+		ASSERT(size <= osl_malloced(osh));
+
+		atomic_sub(size, &osh->cmn->malloced);
 	}
 	kfree(addr);
+}
+
+uint
+osl_check_memleak(osl_t *osh)
+{
+	ASSERT((osh && (osh->magic == OS_HANDLE_MAGIC)));
+	if (atomic_read(&osh->cmn->refcount) == 1)
+		return (atomic_read(&osh->cmn->malloced));
+	else
+		return 0;
 }
 
 uint
 osl_malloced(osl_t *osh)
 {
 	ASSERT((osh && (osh->magic == OS_HANDLE_MAGIC)));
-	return (atomic_read(&osh->malloced));
+		return (atomic_read(&osh->cmn->malloced));
 }
 
 uint
@@ -962,8 +1173,9 @@ osl_dma_consistent_align(void)
 }
 
 void*
-osl_dma_alloc_consistent(osl_t *osh, uint size, uint16 align_bits, uint *alloced, ulong *pap)
+osl_dma_alloc_consistent(osl_t *osh, uint size, uint16 align_bits, uint *alloced, dmaaddr_t *pap)
 {
+	void *va;
 	uint16 align = (1 << align_bits);
 	ASSERT((osh && (osh->magic == OS_HANDLE_MAGIC)));
 
@@ -971,24 +1183,31 @@ osl_dma_alloc_consistent(osl_t *osh, uint size, uint16 align_bits, uint *alloced
 		size += align;
 	*alloced = size;
 
-	return (pci_alloc_consistent(osh->pdev, size, (dma_addr_t*)pap));
+	{
+		dma_addr_t pap_lin;
+		va = pci_alloc_consistent(osh->pdev, size, &pap_lin);
+		*pap = (dmaaddr_t)pap_lin;
+	}
+	return va;
 }
 
 void
-osl_dma_free_consistent(osl_t *osh, void *va, uint size, ulong pa)
+osl_dma_free_consistent(osl_t *osh, void *va, uint size, dmaaddr_t pa)
 {
 	ASSERT((osh && (osh->magic == OS_HANDLE_MAGIC)));
 
 	pci_free_consistent(osh->pdev, size, va, (dma_addr_t)pa);
 }
 
-uint BCMFASTPATH
-osl_dma_map(osl_t *osh, void *va, uint size, int direction)
+dmaaddr_t BCMFASTPATH
+osl_dma_map(osl_t *osh, void *va, uint size, int direction, void *p, hnddma_seg_map_t *dmah)
 {
 	int dir;
 
 	ASSERT((osh && (osh->magic == OS_HANDLE_MAGIC)));
 	dir = (direction == DMA_TX)? PCI_DMA_TODEVICE: PCI_DMA_FROMDEVICE;
+
+
 	return (pci_map_single(osh->pdev, va, size, dir));
 }
 
@@ -1001,6 +1220,7 @@ osl_dma_unmap(osl_t *osh, uint pa, uint size, int direction)
 	dir = (direction == DMA_TX)? PCI_DMA_TODEVICE: PCI_DMA_FROMDEVICE;
 	pci_unmap_single(osh->pdev, (uint32)pa, size, dir);
 }
+
 
 #if defined(BCMASSERT_LOG)
 void
@@ -1017,10 +1237,11 @@ osl_assert(const char *exp, const char *file, int line)
 	if (!basename)
 		basename = file;
 
+#ifdef BCMASSERT_LOG
 	snprintf(tempbuf, 64, "\"%s\": file \"%s\", line %d\n",
 		exp, basename, line);
-
 	printk("%s", tempbuf);
+#endif /* BCMASSERT_LOG */
 
 
 }
@@ -1046,14 +1267,22 @@ void *
 osl_pktdup(osl_t *osh, void *skb)
 {
 	void * p;
-	unsigned long irqflags;
 
+<<<<<<< HEAD
+=======
+	ASSERT(!PKTISCHAINED(skb));
+
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 	/* clear the CTFBUF flag if set and map the rest of the buffer
 	 * before cloning.
 	 */
 	PKTCTFMAP(osh, skb);
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 36)
+	if ((p = pskb_copy((struct sk_buff *)skb, GFP_ATOMIC)) == NULL)
+#else
 	if ((p = skb_clone((struct sk_buff *)skb, GFP_ATOMIC)) == NULL)
+#endif
 		return NULL;
 
 #ifdef CTFPOOL
@@ -1073,15 +1302,28 @@ osl_pktdup(osl_t *osh, void *skb)
 		ctfpool->refills++;
 	}
 #endif /* CTFPOOL */
+<<<<<<< HEAD
+=======
+
+	/* Clear PKTC  context */
+	PKTSETCLINK(p, NULL);
+	PKTCCLRFLAGS(p);
+	PKTCSETCNT(p, 1);
+	PKTCSETLEN(p, PKTLEN(osh, skb));
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 	/* skb_clone copies skb->cb.. we don't want that */
 	if (osh->pub.pkttag)
-		bzero((void*)((struct sk_buff *)p)->cb, OSL_PKTTAG_SZ);
+		OSL_PKTTAG_CLEAR(p);
 
 	/* Increment the packet counter */
+<<<<<<< HEAD
 	spin_lock_irqsave(&osh->pktalloc_lock, irqflags);
 	osh->pub.pktalloced++;
 	spin_unlock_irqrestore(&osh->pktalloc_lock, irqflags);
+=======
+	atomic_inc(&osh->cmn->pktalloced);
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 	return (p);
 }
 
@@ -1091,9 +1333,28 @@ osl_pktdup(osl_t *osh, void *skb)
  */
 
 /*
+<<<<<<< HEAD
  * BINOSL selects the slightly slower function-call-based binary compatible osl.
  */
 
+=======
+ * OSLREGOPS specifies the use of osl_XXX routines to be used for register access
+ */
+
+/*
+ * BINOSL selects the slightly slower function-call-based binary compatible osl.
+ */
+
+uint
+osl_pktalloced(osl_t *osh)
+{
+	if (atomic_read(&osh->cmn->refcount) == 1)
+		return (atomic_read(&osh->cmn->pktalloced));
+	else
+		return 0;
+}
+
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 /* Linux Kernel: File Operations: start */
 void *
 osl_os_open_image(char *filename)
@@ -1135,4 +1396,24 @@ osl_os_close_image(void *image)
 	if (image)
 		filp_close((struct file *)image, NULL);
 }
+<<<<<<< HEAD
+=======
+
+int
+osl_os_image_size(void *image)
+{
+	int len = 0, curroffset;
+
+	if (image) {
+		/* store the current offset */
+		curroffset = generic_file_llseek(image, 0, 1);
+		/* goto end of file to get length */
+		len = generic_file_llseek(image, 0, 2);
+		/* restore back the offset */
+		generic_file_llseek(image, curroffset, 0);
+	}
+	return len;
+}
+
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 /* Linux Kernel: File Operations: end */

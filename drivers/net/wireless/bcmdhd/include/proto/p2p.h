@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 1999-2012, Broadcom Corporation
+ * Copyright (C) 1999-2014, Broadcom Corporation
  * 
  *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -21,7 +21,11 @@
  *
  * Fundamental types and constants relating to WFA P2P (aka WiFi Direct)
  *
+<<<<<<< HEAD
  * $Id: p2p.h 356417 2012-09-12 16:41:24Z $
+=======
+ * $Id: p2p.h 444066 2013-12-18 12:49:24Z $
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
  */
 
 #ifndef _P2P_H_
@@ -70,7 +74,11 @@ typedef struct wifi_p2p_ie wifi_p2p_ie_t;
 #define P2P_SEID_DEV_ID			3	/* P2P Device ID */
 #define P2P_SEID_INTENT			4	/* Group Owner Intent */
 #define P2P_SEID_CFG_TIMEOUT		5	/* Configuration Timeout */
+<<<<<<< HEAD
 #define P2P_SEID_CHANNEL		6	/* Channel */
+=======
+#define P2P_SEID_CHANNEL		6	/* Listen channel */
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #define P2P_SEID_GRP_BSSID		7	/* P2P Group BSSID */
 #define P2P_SEID_XT_TIMING		8	/* Extended Listen Timing */
 #define P2P_SEID_INTINTADDR		9	/* Intended P2P Interface Address */
@@ -85,7 +93,11 @@ typedef struct wifi_p2p_ie wifi_p2p_ie_t;
 #define P2P_SEID_INVITE_FLAGS		18	/* Invitation Flags */
 #define P2P_SEID_VNDR			221	/* Vendor-specific subelement */
 
+<<<<<<< HEAD
 #define P2P_SE_VS_ID_SERVICES	0x1b /* BRCM proprietary subel: L2 Services */
+=======
+#define P2P_SE_VS_ID_SERVICES	0x1b
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 
 /* WiFi P2P IE subelement: P2P Capability (capabilities info) */
@@ -263,6 +275,36 @@ BWL_PRE_PACKED_STRUCT struct wifi_p2p_pri_devtype_s {
 } BWL_POST_PACKED_STRUCT;
 typedef struct wifi_p2p_pri_devtype_s wifi_p2p_pri_devtype_t;
 
+<<<<<<< HEAD
+=======
+/* WiFi P2P Device Info Sub Element Primary Device Type Sub Category
+ * maximum values for each category
+ */
+#define P2P_DISE_SUBCATEGORY_MINVAL		1
+#define P2P_DISE_CATEGORY_COMPUTER		1
+#define P2P_DISE_SUBCATEGORY_COMPUTER_MAXVAL		8
+#define P2P_DISE_CATEGORY_INPUT_DEVICE		2
+#define P2P_DISE_SUBCATEGORY_INPUT_DEVICE_MAXVAL	9
+#define P2P_DISE_CATEGORY_PRINTER		3
+#define P2P_DISE_SUBCATEGORY_PRINTER_MAXVAL		5
+#define P2P_DISE_CATEGORY_CAMERA		4
+#define P2P_DISE_SUBCATEGORY_CAMERA_MAXVAL		4
+#define P2P_DISE_CATEGORY_STORAGE		5
+#define P2P_DISE_SUBCATEGORY_STORAGE_MAXVAL		1
+#define P2P_DISE_CATEGORY_NETWORK_INFRA		6
+#define P2P_DISE_SUBCATEGORY_NETWORK_INFRA_MAXVAL	4
+#define P2P_DISE_CATEGORY_DISPLAY		7
+#define P2P_DISE_SUBCATEGORY_DISPLAY_MAXVAL		4
+#define P2P_DISE_CATEGORY_MULTIMEDIA		8
+#define P2P_DISE_SUBCATEGORY_MULTIMEDIA_MAXVAL		6
+#define P2P_DISE_CATEGORY_GAMING		9
+#define P2P_DISE_SUBCATEGORY_GAMING_MAXVAL		5
+#define P2P_DISE_CATEGORY_TELEPHONE		10
+#define P2P_DISE_SUBCATEGORY_TELEPHONE_MAXVAL		5
+#define P2P_DISE_CATEGORY_AUDIO			11
+#define P2P_DISE_SUBCATEGORY_AUDIO_MAXVAL		6
+
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 /* WiFi P2P IE's Device Info subelement */
 BWL_PRE_PACKED_STRUCT struct wifi_p2p_devinfo_se_s {
 	uint8	eltId;			/* SE ID: P2P_SEID_DEVINFO */
@@ -407,12 +449,23 @@ typedef struct wifi_p2p_noa_se wifi_p2p_noa_se_t;
 
 #define P2P_NOA_SE_FIXED_LEN	5
 
+<<<<<<< HEAD
 /* cnt_type field values */
 #define P2P_NOA_DESC_CNT_RESERVED	0	/* reserved and should not be used */
 #define P2P_NOA_DESC_CNT_REPEAT		255	/* continuous schedule */
 #define P2P_NOA_DESC_TYPE_PREFERRED	1	/* preferred values */
 #define P2P_NOA_DESC_TYPE_ACCEPTABLE	2	/* acceptable limits */
 
+=======
+#define P2P_NOA_SE_MAX_DESC	2	/* max NoA descriptors in presence request */
+
+/* cnt_type field values */
+#define P2P_NOA_DESC_CNT_RESERVED	0	/* reserved and should not be used */
+#define P2P_NOA_DESC_CNT_REPEAT		255	/* continuous schedule */
+#define P2P_NOA_DESC_TYPE_PREFERRED	1	/* preferred values */
+#define P2P_NOA_DESC_TYPE_ACCEPTABLE	2	/* acceptable limits */
+
+>>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 /* ctw_ops_parms field values */
 #define P2P_NOA_CTW_MASK	0x7f
 #define P2P_NOA_OPS_MASK	0x80
