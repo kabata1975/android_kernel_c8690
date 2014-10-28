@@ -193,11 +193,7 @@ SUBARCH := $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ \
 # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
 export KBUILD_BUILDHOST := $(SUBARCH)
 ARCH		?= arm
-#CROSS_COMPILE	?= /usr/local/arm/arm-2010.09/bin/arm-none-eabi-
-#CROSS_COMPILE   ?= /home/jacobwu/stable/arm-linux-androideabi-4.4.3/bin/arm-linux-androideabi-
-CROSS_COMPILE   ?= /opt/arm-2009q3/bin/arm-none-linux-gnueabi-
-CROSS_COMPILE	?= $(CONFIG_CROSS_COMPILE:"%"=%)
-
+CROSS_COMPILE	?= /home/paf/Escritorio/toolchains/arm-linux-gnueabi-linaro_4.7.4-2014.06/bin/arm-eabi-
 # Architecture as present in compile.h
 UTS_MACHINE 	:= $(ARCH)
 SRCARCH 	:= $(ARCH)
@@ -352,7 +348,7 @@ CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
 CFLAGS_MODULE   = -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -fsingle-precision-constant -pipe
 AFLAGS_MODULE   =
-LDFLAGS_MODULE  =
+LDFLAGS_MODULE  = --strip-debug
 CFLAGS_KERNEL	=
 AFLAGS_KERNEL	=
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
