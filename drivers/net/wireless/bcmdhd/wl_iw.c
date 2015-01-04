@@ -1,7 +1,7 @@
 /*
  * Linux Wireless Extensions support
  *
- * Copyright (C) 1999-2014, Broadcom Corporation
+ * Copyright (C) 1999-2012, Broadcom Corporation
  * 
  *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -21,7 +21,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: wl_iw.c 425990 2013-09-26 07:28:16Z $
+ * $Id: wl_iw.c 352251 2012-08-22 06:08:38Z $
  */
 
 #if defined(USE_IW)
@@ -38,6 +38,7 @@
 #include <linux/if_arp.h>
 #include <asm/uaccess.h>
 
+
 typedef const struct si_pub	si_t;
 #include <wlioctl.h>
 
@@ -45,60 +46,6 @@ typedef const struct si_pub	si_t;
 #include <wl_dbg.h>
 #include <wl_iw.h>
 
-<<<<<<< HEAD
-=======
-#ifdef BCMWAPI_WPI
-/* these items should evetually go into wireless.h of the linux system headfile dir */
-#ifndef IW_ENCODE_ALG_SM4
-#define IW_ENCODE_ALG_SM4 0x20
-#endif
-
-#ifndef IW_AUTH_WAPI_ENABLED
-#define IW_AUTH_WAPI_ENABLED 0x20
-#endif
-
-#ifndef IW_AUTH_WAPI_VERSION_1
-#define IW_AUTH_WAPI_VERSION_1	0x00000008
-#endif
-
-#ifndef IW_AUTH_CIPHER_SMS4
-#define IW_AUTH_CIPHER_SMS4	0x00000020
-#endif
-
-#ifndef IW_AUTH_KEY_MGMT_WAPI_PSK
-#define IW_AUTH_KEY_MGMT_WAPI_PSK 4
-#endif
-
-#ifndef IW_AUTH_KEY_MGMT_WAPI_CERT
-#define IW_AUTH_KEY_MGMT_WAPI_CERT 8
-#endif
-#endif /* BCMWAPI_WPI */
-
-/* Broadcom extensions to WEXT, linux upstream has obsoleted WEXT */
-#ifndef IW_AUTH_KEY_MGMT_FT_802_1X
-#define IW_AUTH_KEY_MGMT_FT_802_1X 0x04
-#endif
-
-#ifndef IW_AUTH_KEY_MGMT_FT_PSK
-#define IW_AUTH_KEY_MGMT_FT_PSK 0x08
-#endif
-
-#ifndef IW_ENC_CAPA_FW_ROAM_ENABLE
-#define IW_ENC_CAPA_FW_ROAM_ENABLE	0x00000020
-#endif
-
-
-/* FC9: wireless.h 2.6.25-14.fc9.i686 is missing these, even though WIRELESS_EXT is set to latest
- * version 22.
- */
-#ifndef IW_ENCODE_ALG_PMK
-#define IW_ENCODE_ALG_PMK 4
-#endif
-#ifndef IW_ENC_CAPA_4WAY_HANDSHAKE
-#define IW_ENC_CAPA_4WAY_HANDSHAKE 0x00000010
-#endif
-/* End FC9. */
->>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27))
 #include <linux/rtnetlink.h>
@@ -116,21 +63,12 @@ uint wl_msg_level = WL_ERROR_VAL;
 #define MAX_WLIW_IOCTL_LEN 1024
 
 /* IOCTL swapping mode for Big Endian host with Little Endian dongle.  Default to off */
-<<<<<<< HEAD
 #define htod32(i) i
 #define htod16(i) i
 #define dtoh32(i) i
 #define dtoh16(i) i
 #define htodchanspec(i) i
 #define dtohchanspec(i) i
-=======
-#define htod32(i) (i)
-#define htod16(i) (i)
-#define dtoh32(i) (i)
-#define dtoh16(i) (i)
-#define htodchanspec(i) (i)
-#define dtohchanspec(i) (i)
->>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 #if defined(WL_WIRELESS_EXT)
 extern struct iw_statistics *dhd_get_wireless_stats(struct net_device *dev);
@@ -144,13 +82,7 @@ extern int dhd_wait_pend8021x(struct net_device *dev);
 #endif /* WIRELESS_EXT < 19 */
 
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
-#define DAEMONIZE(a)	do { \
-		allow_signal(SIGKILL);	\
-		allow_signal(SIGTERM);	\
-	} while (0)
-#elif ((LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)) && \
-	(LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 0)))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 0))
 #define DAEMONIZE(a) daemonize(a); \
 	allow_signal(SIGKILL); \
 	allow_signal(SIGTERM);
@@ -183,12 +115,6 @@ typedef struct iscan_info {
 	iscan_buf_t * list_cur;
 
 	/* Thread to work on iscan */
-<<<<<<< HEAD
-=======
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 7, 0))
-	struct task_struct *kthread;
-#endif
->>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 	long sysioc_pid;
 	struct semaphore sysioc_sem;
 	struct completion sysioc_exited;
@@ -263,7 +189,6 @@ dev_wlc_ioctl(
 	strcpy(ifr.ifr_name, dev->name);
 	ifr.ifr_data = (caddr_t) &ioc;
 
-<<<<<<< HEAD
 #ifndef LINUX_HYBRID
 	/* Causes an extraneous 'up'.  If specific ioctls are failing due
 	   to device down, then we can investigate those ioctls.
@@ -271,8 +196,6 @@ dev_wlc_ioctl(
 	dev_open(dev);
 #endif
 
-=======
->>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 	fs = get_fs();
 	set_fs(get_ds());
 #if defined(WL_USE_NETDEV_OPS)
@@ -484,12 +407,6 @@ wl_iw_set_pm(
 	error = dev_wlc_ioctl(dev, WLC_SET_PM, &pm, sizeof(pm));
 	return error;
 }
-<<<<<<< HEAD
-=======
-
-#if WIRELESS_EXT > 17
-#endif /* WIRELESS_EXT > 17 */
->>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 #endif /* WIRELESS_EXT > 12 */
 
 int
@@ -740,7 +657,6 @@ wl_iw_get_range(
 		{14, 29, 43, 58, 87, 116, 130, 144},
 		{27, 54, 81, 108, 162, 216, 243, 270},
 		{30, 60, 90, 120, 180, 240, 270, 300}};
-	int fbt_cap = 0;
 
 	WL_TRACE(("%s: SIOCGIWRANGE\n", dev->name));
 
@@ -796,22 +712,15 @@ wl_iw_get_range(
 	range->num_bitrates = rateset.count;
 	for (i = 0; i < rateset.count && i < IW_MAX_BITRATES; i++)
 		range->bitrate[i] = (rateset.rates[i] & 0x7f) * 500000; /* convert to bps */
-<<<<<<< HEAD
 	dev_wlc_intvar_get(dev, "nmode", &nmode);
-=======
-	if ((error = dev_wlc_intvar_get(dev, "nmode", &nmode)))
-		return error;
->>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 	if ((error = dev_wlc_ioctl(dev, WLC_GET_PHYTYPE, &phytype, sizeof(phytype))))
 		return error;
+
 	if (nmode == 1 && ((phytype == WLC_PHY_TYPE_SSN) || (phytype == WLC_PHY_TYPE_LCN) ||
 		(phytype == WLC_PHY_TYPE_LCN40))) {
-		if ((error = dev_wlc_intvar_get(dev, "mimo_bw_cap", &bw_cap)))
-			return error;
-		if ((error = dev_wlc_intvar_get(dev, "sgi_tx", &sgi_tx)))
-			return error;
-		if ((error = dev_wlc_ioctl(dev, WLC_GET_CHANNEL, &ci, sizeof(channel_info_t))))
-			return error;
+		dev_wlc_intvar_get(dev, "mimo_bw_cap", &bw_cap);
+		dev_wlc_intvar_get(dev, "sgi_tx", &sgi_tx);
+		dev_wlc_ioctl(dev, WLC_GET_CHANNEL, &ci, sizeof(channel_info_t));
 		ci.hw_channel = dtoh32(ci.hw_channel);
 
 		if (bw_cap == 0 ||
@@ -829,7 +738,6 @@ wl_iw_get_range(
 				nrate_list2copy = 3;
 		}
 		range->num_bitrates += 8;
-		ASSERT(range->num_bitrates < IW_MAX_BITRATES);
 		for (k = 0; i < range->num_bitrates; k++, i++) {
 			/* convert to bps */
 			range->bitrate[i] = (nrate_list[nrate_list2copy][k]) * 500000;
@@ -900,28 +808,11 @@ wl_iw_get_range(
 	range->enc_capa |= IW_ENC_CAPA_CIPHER_TKIP;
 	range->enc_capa |= IW_ENC_CAPA_CIPHER_CCMP;
 	range->enc_capa |= IW_ENC_CAPA_WPA2;
-<<<<<<< HEAD
 #if (defined(BCMSUP_PSK) && defined(WLFBT))
 	/* Tell the host (e.g. wpa_supplicant) to let us do the handshake */
 	range->enc_capa |= IW_ENC_CAPA_4WAY_HANDSHAKE;
 #endif /* (defined (BCMSUP_PSK) && defined(WLFBT)) */
 
-=======
-
-	/* Determine driver FBT capability. */
-	if (dev_wlc_intvar_get(dev, "fbt_cap", &fbt_cap) == 0) {
-		if (fbt_cap == WLC_FBT_CAP_DRV_4WAY_AND_REASSOC) {
-			/* Tell the host (e.g. wpa_supplicant) to let driver do the handshake */
-			range->enc_capa |= IW_ENC_CAPA_4WAY_HANDSHAKE;
-		}
-	}
-
-#ifdef BCMFW_ROAM_ENABLE_WEXT
-	/* Advertise firmware roam capability to the external supplicant */
-	range->enc_capa |= IW_ENC_CAPA_FW_ROAM_ENABLE;
-#endif /* BCMFW_ROAM_ENABLE_WEXT */
-
->>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 	/* Event capability (kernel) */
 	IW_EVENT_CAPA_SET_KERNEL(range->event_capa);
 	/* Event capability (driver) */
@@ -1383,45 +1274,6 @@ ie_is_wps_ie(uint8 **wpsie, uint8 **tlvs, int *tlvs_len)
 }
 #endif /* WIRELESS_EXT > 17 */
 
-<<<<<<< HEAD
-=======
-#ifdef BCMWAPI_WPI
-static inline int _wpa_snprintf_hex(char *buf, size_t buf_size, const u8 *data,
-	size_t len, int uppercase)
-{
-	size_t i;
-	char *pos = buf, *end = buf + buf_size;
-	int ret;
-	if (buf_size == 0)
-		return 0;
-	for (i = 0; i < len; i++) {
-		ret = snprintf(pos, end - pos, uppercase ? "%02X" : "%02x",
-			data[i]);
-		if (ret < 0 || ret >= end - pos) {
-			end[-1] = '\0';
-			return pos - buf;
-		}
-		pos += ret;
-	}
-	end[-1] = '\0';
-	return pos - buf;
-}
-
-/**
- * wpa_snprintf_hex - Print data as a hex string into a buffer
- * @buf: Memory area to use as the output buffer
- * @buf_size: Maximum buffer size in bytes (should be at least 2 * len + 1)
- * @data: Data to be printed
- * @len: Length of data in bytes
- * Returns: Number of bytes written
- */
-static int
-wpa_snprintf_hex(char *buf, size_t buf_size, const u8 *data, size_t len)
-{
-	return _wpa_snprintf_hex(buf, buf_size, data, len, 0);
-}
-#endif /* BCMWAPI_WPI */
->>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 static int
 wl_iw_handle_scanresults_ies(char **event_p, char *end,
@@ -1445,16 +1297,14 @@ wl_iw_handle_scanresults_ies(char **event_p, char *end,
 		}
 		ptr = ((uint8 *)bi) + sizeof(wl_bss_info_t);
 
+#if defined(WLFBT)
 		if ((ie = bcm_parse_tlvs(ptr, ptr_len, DOT11_MNG_MDIE_ID))) {
 			iwe.cmd = IWEVGENIE;
 			iwe.u.data.length = ie->len + 2;
 			event = IWE_STREAM_ADD_POINT(info, event, end, &iwe, (char *)ie);
 		}
 		ptr = ((uint8 *)bi) + sizeof(wl_bss_info_t);
-<<<<<<< HEAD
 #endif /* WLFBT */
-=======
->>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 		while ((ie = bcm_parse_tlvs(ptr, ptr_len, DOT11_MNG_WPA_ID))) {
 			/* look for WPS IE */
@@ -1477,41 +1327,6 @@ wl_iw_handle_scanresults_ies(char **event_p, char *end,
 			}
 		}
 
-<<<<<<< HEAD
-=======
-#ifdef BCMWAPI_WPI
-		ptr = ((uint8 *)bi) + sizeof(wl_bss_info_t);
-		ptr_len = bi->ie_length;
-
-		while ((ie = bcm_parse_tlvs(ptr, ptr_len, DOT11_MNG_WAPI_ID))) {
-			WL_TRACE(("%s: found a WAPI IE...\n", __FUNCTION__));
-#ifdef WAPI_IE_USE_GENIE
-			iwe.cmd = IWEVGENIE;
-			iwe.u.data.length = ie->len + 2;
-			event = IWE_STREAM_ADD_POINT(info, event, end, &iwe, (char *)ie);
-#else /* using CUSTOM event */
-			iwe.cmd = IWEVCUSTOM;
-			custom_event_len = strlen("wapi_ie=") + 2*(ie->len + 2);
-			iwe.u.data.length = custom_event_len;
-
-			buf = kmalloc(custom_event_len+1, GFP_KERNEL);
-			if (buf == NULL)
-			{
-				WL_ERROR(("malloc(%d) returned NULL...\n", custom_event_len));
-				break;
-			}
-
-			memcpy(buf, "wapi_ie=", 8);
-			wpa_snprintf_hex(buf + 8, 2+1, &(ie->id), 1);
-			wpa_snprintf_hex(buf + 10, 2+1, &(ie->len), 1);
-			wpa_snprintf_hex(buf + 12, 2*ie->len+1, ie->data, ie->len);
-			event = IWE_STREAM_ADD_POINT(info, event, end, &iwe, buf);
-			kfree(buf);
-#endif /* WAPI_IE_USE_GENIE */
-			break;
-		}
-#endif /* BCMWAPI_WPI */
->>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 	*event_p = event;
 	}
 
@@ -2493,10 +2308,7 @@ wl_iw_set_encodeext(
 				return error;
 		}
 	}
-<<<<<<< HEAD
 #if (defined(BCMSUP_PSK) && defined(WLFBT))
-=======
->>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 	/* This case is used to allow an external 802.1x supplicant
 	 * to pass the PMK to the in-driver supplicant for use in
 	 * the 4-way handshake.
@@ -2522,10 +2334,7 @@ wl_iw_set_encodeext(
 		if (error)
 			return error;
 	}
-<<<<<<< HEAD
 #endif /* (defined (BCMSUP_PSK) && defined(WLFBT)) */
-=======
->>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 	else {
 		if (iwe->key_len > sizeof(key.data))
@@ -2727,8 +2536,7 @@ wl_iw_set_wpaauth(
 		break;
 
 	case IW_AUTH_CIPHER_PAIRWISE:
-	case IW_AUTH_CIPHER_GROUP: {
-		int fbt_cap = 0;
+	case IW_AUTH_CIPHER_GROUP:
 
 		if (paramid == IW_AUTH_CIPHER_PAIRWISE) {
 			iw->pwsec = paramval;
@@ -2765,48 +2573,33 @@ wl_iw_set_wpaauth(
 
 		if ((error = dev_wlc_intvar_set(dev, "wsec", val)))
 			return error;
-
-		/* Ensure in-dongle supplicant is turned on when FBT wants to do the 4-way
-		 * handshake.
-		 */
-		if (dev_wlc_intvar_get(dev, "fbt_cap", &fbt_cap) == 0) {
-			if (fbt_cap == WLC_FBT_CAP_DRV_4WAY_AND_REASSOC) {
-				if ((paramid == IW_AUTH_CIPHER_PAIRWISE) && (val & AES_ENABLED)) {
-					if ((error = dev_wlc_intvar_set(dev, "sup_wpa", 1)))
-						return error;
-				}
-				else if (val == 0) {
-					if ((error = dev_wlc_intvar_set(dev, "sup_wpa", 0)))
-						return error;
-				}
-			}
+#ifdef WLFBT
+		if ((paramid == IW_AUTH_CIPHER_PAIRWISE) && (val | AES_ENABLED)) {
+			if ((error = dev_wlc_intvar_set(dev, "sup_wpa", 1)))
+				return error;
 		}
-<<<<<<< HEAD
+		else if (val == 0) {
+			if ((error = dev_wlc_intvar_set(dev, "sup_wpa", 0)))
+				return error;
+		}
 #endif /* WLFBT */
-=======
->>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 		break;
-	}
 
 	case IW_AUTH_KEY_MGMT:
 		if ((error = dev_wlc_intvar_get(dev, "wpa_auth", &val)))
 			return error;
 
 		if (val & (WPA_AUTH_PSK | WPA_AUTH_UNSPECIFIED)) {
-			if (paramval & (IW_AUTH_KEY_MGMT_FT_PSK | IW_AUTH_KEY_MGMT_PSK))
+			if (paramval & IW_AUTH_KEY_MGMT_PSK)
 				val = WPA_AUTH_PSK;
 			else
 				val = WPA_AUTH_UNSPECIFIED;
-			if (paramval & (IW_AUTH_KEY_MGMT_FT_802_1X | IW_AUTH_KEY_MGMT_FT_PSK))
-				val |= WPA2_AUTH_FT;
 		}
 		else if (val & (WPA2_AUTH_PSK | WPA2_AUTH_UNSPECIFIED)) {
-			if (paramval & (IW_AUTH_KEY_MGMT_FT_PSK | IW_AUTH_KEY_MGMT_PSK))
+			if (paramval & IW_AUTH_KEY_MGMT_PSK)
 				val = WPA2_AUTH_PSK;
 			else
 				val = WPA2_AUTH_UNSPECIFIED;
-			if (paramval & (IW_AUTH_KEY_MGMT_FT_802_1X | IW_AUTH_KEY_MGMT_FT_PSK))
-				val |= WPA2_AUTH_FT;
 		}
 		WL_TRACE(("%s: %d: setting wpa_auth to %d\n", __FUNCTION__, __LINE__, val));
 		if ((error = dev_wlc_intvar_set(dev, "wpa_auth", val)))
@@ -2889,34 +2682,7 @@ wl_iw_set_wpaauth(
 
 
 #endif /* WIRELESS_EXT > 17 */
-<<<<<<< HEAD
 
-=======
-
-#ifdef BCMWAPI_WPI
-
-	case IW_AUTH_WAPI_ENABLED:
-		if ((error = dev_wlc_intvar_get(dev, "wsec", &val)))
-			return error;
-		if (paramval) {
-			val |= SMS4_ENABLED;
-			if ((error = dev_wlc_intvar_set(dev, "wsec", val))) {
-				WL_ERROR(("%s: setting wsec to 0x%0x returned error %d\n",
-					__FUNCTION__, val, error));
-				return error;
-			}
-			if ((error = dev_wlc_intvar_set(dev, "wpa_auth", WAPI_AUTH_UNSPECIFIED))) {
-				WL_ERROR(("%s: setting wpa_auth(%d) returned %d\n",
-					__FUNCTION__, WAPI_AUTH_UNSPECIFIED,
-					error));
-				return error;
-			}
-		}
-
-		break;
-
-#endif /* BCMWAPI_WPI */
->>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 	default:
 		break;
@@ -3098,19 +2864,13 @@ static const iw_handler wl_iw_handler[] =
 enum {
 	WL_IW_SET_LEDDC = SIOCIWFIRSTPRIV,
 	WL_IW_SET_VLANMODE,
-	WL_IW_SET_PM,
-#if WIRELESS_EXT > 17
-#endif /* WIRELESS_EXT > 17 */
-	WL_IW_SET_LAST
+	WL_IW_SET_PM
 };
 
 static iw_handler wl_iw_priv_handler[] = {
 	wl_iw_set_leddc,
 	wl_iw_set_vlanmode,
-	wl_iw_set_pm,
-#if WIRELESS_EXT > 17
-#endif /* WIRELESS_EXT > 17 */
-	NULL
+	wl_iw_set_pm
 };
 
 static struct iw_priv_args wl_iw_priv_args[] = {
@@ -3131,10 +2891,7 @@ static struct iw_priv_args wl_iw_priv_args[] = {
 		IW_PRIV_TYPE_INT | IW_PRIV_SIZE_FIXED | 1,
 		0,
 		"set_pm"
-	},
-#if WIRELESS_EXT > 17
-#endif /* WIRELESS_EXT > 17 */
-	{ 0, 0, 0, { 0 } }
+	}
 };
 
 const struct iw_handler_def wl_iw_handler_def =
@@ -3149,10 +2906,7 @@ const struct iw_handler_def wl_iw_handler_def =
 #if WIRELESS_EXT >= 19
 	get_wireless_stats: dhd_get_wireless_stats,
 #endif /* WIRELESS_EXT >= 19 */
-<<<<<<< HEAD
 #endif
-=======
->>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 	};
 #endif /* WIRELESS_EXT > 12 */
 
@@ -3748,11 +3502,7 @@ static void wl_iw_send_scan_complete(iscan_info_t *iscan)
 
 	memset(&wrqu, 0, sizeof(wrqu));
 
-<<<<<<< HEAD
 	/* wext expects to get no data for SIOCGIWSCAN Event */
-=======
-	/* wext expects to get no data for SIOCGIWSCAN Event  */
->>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 	wireless_send_event(iscan->dev, SIOCGIWSCAN, &wrqu, NULL);
 }
 
@@ -3832,9 +3582,6 @@ wl_iw_attach(struct net_device *dev, void * dhdp)
 	if (!iscan)
 		return -ENOMEM;
 	memset(iscan, 0, sizeof(iscan_info_t));
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 7, 0))
-	iscan->kthread = NULL;
-#endif
 	iscan->sysioc_pid = -1;
 	/* we only care about main interface so save a global here */
 	g_iscan = iscan;
@@ -3850,12 +3597,7 @@ wl_iw_attach(struct net_device *dev, void * dhdp)
 
 	sema_init(&iscan->sysioc_sem, 0);
 	init_completion(&iscan->sysioc_exited);
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 7, 0))
-	iscan->kthread = kthread_run(_iscan_sysioc_thread, iscan, "iscan_sysioc");
-	iscan->sysioc_pid = iscan->kthread->pid;
-#else
 	iscan->sysioc_pid = kernel_thread(_iscan_sysioc_thread, iscan, 0);
-#endif
 	if (iscan->sysioc_pid < 0)
 		return -ENOMEM;
 	return 0;

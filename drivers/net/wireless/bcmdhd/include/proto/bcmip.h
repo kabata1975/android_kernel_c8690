@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 1999-2014, Broadcom Corporation
+ * Copyright (C) 1999-2012, Broadcom Corporation
  * 
  *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -21,7 +21,7 @@
  *
  * Fundamental constants relating to IP Protocol
  *
- * $Id: bcmip.h 407335 2013-06-12 16:32:12Z $
+ * $Id: bcmip.h 290206 2011-10-17 19:13:51Z $
  */
 
 #ifndef _bcmip_h_
@@ -52,7 +52,6 @@
 #define IP_PROT_ICMP6		0x3a	/* ICMPv6 protocol type */
 
 /* IPV4 field offsets */
-<<<<<<< HEAD
 #define IPV4_VER_HL_OFFSET	0	/* version and ihl byte offset */
 #define IPV4_TOS_OFFSET		1	/* type of service offset */
 #define IPV4_PKTLEN_OFFSET	2	/* packet length offset */
@@ -62,18 +61,6 @@
 #define IPV4_SRC_IP_OFFSET	12	/* src IP addr offset */
 #define IPV4_DEST_IP_OFFSET	16	/* dest IP addr offset */
 #define IPV4_OPTIONS_OFFSET	20	/* IP options offset */
-=======
-#define IPV4_VER_HL_OFFSET      0       /* version and ihl byte offset */
-#define IPV4_TOS_OFFSET         1       /* type of service offset */
-#define IPV4_PKTLEN_OFFSET      2       /* packet length offset */
-#define IPV4_PKTFLAG_OFFSET     6       /* more-frag,dont-frag flag offset */
-#define IPV4_PROT_OFFSET        9       /* protocol type offset */
-#define IPV4_CHKSUM_OFFSET      10      /* IP header checksum offset */
-#define IPV4_SRC_IP_OFFSET      12      /* src IP addr offset */
-#define IPV4_DEST_IP_OFFSET     16      /* dest IP addr offset */
-#define IPV4_OPTIONS_OFFSET     20      /* IP options offset */
-#define IPV4_MIN_HEADER_LEN     20      /* Minimum size for an IP header (no options) */
->>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 
 /* IPV4 field decodes */
 #define IPV4_VER_MASK		0xf0	/* IPV4 version mask */
@@ -162,11 +149,6 @@ BWL_PRE_PACKED_STRUCT struct ipv4_hdr {
 	(IP_VER(ip_body) == IP_VER_4 ? IPV4_TOS(ip_body) : \
 	 IP_VER(ip_body) == IP_VER_6 ? IPV6_TRAFFIC_CLASS(ip_body) : 0)
 
-<<<<<<< HEAD
-=======
-#define IP_DSCP46(ip_body) (IP_TOS46(ip_body) >> IPV4_TOS_DSCP_SHIFT);
-
->>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 /* IPV6 extension headers (options) */
 #define IPV6_EXTHDR_HOP		0
 #define IPV6_EXTHDR_ROUTING	43
@@ -222,21 +204,6 @@ ipv6_exthdr_len(uint8 *h, uint8 *proto)
 	return len;
 }
 
-<<<<<<< HEAD
-=======
-#define IPV4_ISMULTI(a) (((a) & 0xf0000000) == 0xe0000000)
-
-#define IPV4_MCAST_TO_ETHER_MCAST(ipv4, ether) \
-{ \
-	ether[0] = 0x01; \
-	ether[1] = 0x00; \
-	ether[2] = 0x5E; \
-	ether[3] = (ipv4 & 0x7f0000) >> 16; \
-	ether[4] = (ipv4 & 0xff00) >> 8; \
-	ether[5] = (ipv4 & 0xff); \
-}
-
->>>>>>> 90123ab... Update Wi-Fi drivers to 1.141.44 (coming from N5100 kernel drop)
 /* This marks the end of a packed structure section. */
 #include <packed_section_end.h>
 
