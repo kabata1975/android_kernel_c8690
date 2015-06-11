@@ -173,6 +173,410 @@ config MSM_DEBUG_UART
 if HAS_MSM_DEBUG_UART_PHYS
 choice
 	prompt "Debug UART"
+<<<<<<< HEAD
+=======
+	depends on DEBUG_LL
+
+	config DEBUG_MSM8974_UART
+		bool "Kernel low-level debugging messages via MSM 8974 UART"
+		depends on ARCH_MSM8974
+		select MSM_HAS_DEBUG_UART_HS_V14
+		help
+		  Say Y here if you want the debug print routines to direct
+		  their output to the serial port on MSM 8974 devices.
+
+	config DEBUG_MPQ8092_UART
+                bool "Kernel low-level debugging messages via MPQ8092 UART"
+                depends on ARCH_MPQ8092
+                select MSM_HAS_DEBUG_UART_HS_V14
+                help
+                  Say Y here if you want the debug print routines to direct
+                  their output to the serial port on MPQ8092 devices.
+
+	config DEBUG_MSM8916_UART
+                bool "Kernel low-level debugging messages via MSM8916 UART"
+                depends on ARCH_MSM8916
+                select MSM_HAS_DEBUG_UART_HS_V14
+                help
+                  Say Y here if you want the debug print routines to direct
+                  their output to the serial port on MSM8916 devices.
+
+	config DEBUG_APQ8084_UART
+                bool "Kernel low-level debugging messages via APQ8084 UART"
+                depends on ARCH_APQ8084
+                select MSM_HAS_DEBUG_UART_HS_V14
+                help
+                  Say Y here if you want the debug print routines to direct
+                  their output to the serial port on APQ8084 devices.
+
+	config DEBUG_FSM9900_UART
+		bool "Kernel low-level debugging messages via FSM9900 UART"
+		depends on ARCH_FSM9900
+		select MSM_HAS_DEBUG_UART_HS_V14
+		help
+		  Say Y here if you want the debug print routines to direct
+		  their output to the serial port on FSM9900 devices.
+
+	config DEBUG_MSMSAMARIUM_UART
+		bool "Kernel low-level debugging messages via MSM SAMARIUM UART"
+		depends on ARCH_MSMSAMARIUM
+		select MSM_HAS_DEBUG_UART_HS_V14
+		help
+		  Say Y here if you want the debug print routines to direct
+		  their output to the serial port on MSM SAMARIUM devices.
+
+	config DEBUG_MSM8226_UART
+		bool "Kernel low-level debugging messages via MSM 8226 UART"
+		depends on ARCH_MSM8226
+		select MSM_HAS_DEBUG_UART_HS_V14
+		help
+		  Say Y here if you want the debug print routines to direct
+		  their output to the serial port on MSM 8226 devices.
+endchoice
+
+choice
+	prompt "Default Timer"
+	default MSM7X00A_USE_GP_TIMER
+
+	config MSM7X00A_USE_GP_TIMER
+		bool "GP Timer"
+	help
+	  Low resolution timer that allows power collapse from idle.
+
+	config MSM7X00A_USE_DG_TIMER
+		bool "DG Timer"
+	help
+	  High resolution timer.
+endchoice
+
+choice
+	prompt "Suspend sleep mode"
+	default MSM7X00A_SLEEP_MODE_POWER_COLLAPSE_SUSPEND
+	help
+	  Allows overriding the sleep mode used. Leave at power
+	  collapse suspend unless the arm9 image has problems.
+
+	config MSM7X00A_SLEEP_MODE_POWER_COLLAPSE_SUSPEND
+		bool "Power collapse suspend"
+	help
+	  Lowest sleep state. Returns through reset vector.
+
+	config MSM7X00A_SLEEP_MODE_POWER_COLLAPSE
+		bool "Power collapse"
+	help
+	  Sleep state that returns through reset vector.
+
+	config MSM7X00A_SLEEP_MODE_APPS_SLEEP
+		bool "Apps Sleep"
+
+	config MSM7X00A_SLEEP_MODE_RAMP_DOWN_AND_WAIT_FOR_INTERRUPT
+		bool "Ramp down cpu clock and wait for interrupt"
+
+	config MSM7X00A_SLEEP_WAIT_FOR_INTERRUPT
+		bool "Wait for interrupt"
+endchoice
+
+config MSM7X00A_SLEEP_MODE
+	int
+	default 0 if MSM7X00A_SLEEP_MODE_POWER_COLLAPSE_SUSPEND
+	default 1 if MSM7X00A_SLEEP_MODE_POWER_COLLAPSE
+	default 2 if MSM7X00A_SLEEP_MODE_APPS_SLEEP
+	default 3 if MSM7X00A_SLEEP_MODE_RAMP_DOWN_AND_WAIT_FOR_INTERRUPT
+	default 4 if MSM7X00A_SLEEP_WAIT_FOR_INTERRUPT
+
+choice
+	prompt "Idle sleep mode"
+	default MSM7X00A_IDLE_SLEEP_MODE_POWER_COLLAPSE
+	help
+	  Allows overriding the sleep mode used from idle. Leave at power
+	  collapse suspend unless the arm9 image has problems.
+
+	config MSM7X00A_IDLE_SLEEP_MODE_POWER_COLLAPSE_SUSPEND
+		bool "Power collapse suspend"
+	help
+	  Lowest sleep state. Returns through reset vector.
+
+	config MSM7X00A_IDLE_SLEEP_MODE_POWER_COLLAPSE
+		bool "Power collapse"
+	help
+	  Sleep state that returns through reset vector.
+
+	config MSM7X00A_IDLE_SLEEP_MODE_APPS_SLEEP
+		bool "Apps Sleep"
+
+	config MSM7X00A_IDLE_SLEEP_MODE_RAMP_DOWN_AND_WAIT_FOR_INTERRUPT
+		bool "Ramp down cpu clock and wait for interrupt"
+
+	config MSM7X00A_IDLE_SLEEP_WAIT_FOR_INTERRUPT
+		bool "Wait for interrupt"
+endchoice
+
+config MSM7X00A_IDLE_SLEEP_MODE
+	int
+	default 0 if MSM7X00A_IDLE_SLEEP_MODE_POWER_COLLAPSE_SUSPEND
+	default 1 if MSM7X00A_IDLE_SLEEP_MODE_POWER_COLLAPSE
+	default 2 if MSM7X00A_IDLE_SLEEP_MODE_APPS_SLEEP
+	default 3 if MSM7X00A_IDLE_SLEEP_MODE_RAMP_DOWN_AND_WAIT_FOR_INTERRUPT
+	default 4 if MSM7X00A_IDLE_SLEEP_WAIT_FOR_INTERRUPT
+
+config MSM7X00A_IDLE_SLEEP_MIN_TIME
+	int "Minimum idle time before sleep"
+	default 20000000
+	help
+	  Minimum idle time in nanoseconds before entering low power mode.
+
+config MSM7X00A_IDLE_SPIN_TIME
+	int "Idle spin time before cpu ramp down"
+	default 80000
+	help
+	  Spin time in nanoseconds before ramping down cpu clock and entering
+	  any low power state.
+
+menuconfig MSM_IDLE_STATS
+	bool "Collect idle statistics"
+	depends on MSM_PM
+	default y
+	help
+	  Collect idle statistics and export them in proc/msm_pm_stats.
+
+if MSM_IDLE_STATS
+
+config MSM_IDLE_STATS_FIRST_BUCKET
+	int "First bucket time"
+	default 62500
+	help
+	  Upper time limit in nanoseconds of first bucket.
+
+config MSM_IDLE_STATS_BUCKET_SHIFT
+	int "Bucket shift"
+	default 2
+
+config MSM_IDLE_STATS_BUCKET_COUNT
+	int "Bucket count"
+	default 10
+
+config MSM_SUSPEND_STATS_FIRST_BUCKET
+	int "First bucket time for suspend"
+	default 1000000000
+	help
+	  Upper time limit in nanoseconds of first bucket of the
+	  histogram.  This is for collecting statistics on suspend.
+
+endif # MSM_IDLE_STATS
+
+config CPU_HAS_L2_PMU
+	bool "L2CC PMU Support"
+	help
+	 Select this if the L2 cache controller has a Performance Monitoring Unit.
+
+config MSM_SERIAL_DEBUGGER_CONSOLE
+	depends on MSM_SERIAL_DEBUGGER
+	default n
+	bool "Console on FIQ Serial Debugger port"
+	help
+	  Enables a console so that printk messages are displayed on
+	  the debugger serial port as the occur.
+
+config MSM_SMD
+	depends on MSM_SMEM
+	bool "MSM Shared Memory Driver (SMD)"
+	help
+	  Support for the shared memory interface between the apps
+	  processor and the baseband processor.  Provides access to
+	  the "shared heap", as well as virtual serial channels
+	  used to communicate with various services on the baseband
+	  processor.
+
+config MSM_PCIE
+	bool "MSM PCIe Controller driver"
+	depends on PCI && PCI_MSI
+	select PCI_DOMAINS
+	help
+	  Enables the PCIe functionality by configures PCIe core on
+	  MSM chipset and by enabling the ARM PCI framework extension.
+
+config MSM_SMD_DEBUG
+	depends on MSM_SMD
+	default y
+	bool "MSM SMD debug support"
+	help
+	  Support for debugging the SMD for communication
+	  between the ARM9 and ARM11
+
+config MSM_SMP2P
+	bool "SMSM Point-to-Point (SMP2P)"
+	depends on MSM_SMD
+	help
+	  Provide point-to-point remote signaling support.
+	  SMP2P enables transferring 32-bit values between
+	  the local and a remote system using shared
+	  memory and interrupts.  A client can open multiple
+	  32-bit values by specifying a unique string and
+	  remote processor ID.
+
+config MSM_SMP2P_TEST
+	bool "SMSM Point-to-Point Test"
+	depends on MSM_SMP2P
+	help
+	  Enables loopback and unit testing support for
+	  SMP2P.  Loopback support is used by other
+	  processors to do unit testing.  Unit tests
+	  are used to verify the local and remote
+	  implementations.
+
+config MSM_TEST_QMI_CLIENT
+	depends on MSM_QMI_INTERFACE
+	bool "MSM TEST QMI CLIENT"
+	help
+	  The sample QMI client provides a test code for QMI usage. The
+	  test_service client driver uses QMI interface library to send
+	  and receive QMI messages over IPC Router. The test code sends
+	  a synchronous QMI request to the test_service and handles the
+	  QMI responses.
+
+config MSM_ONCRPCROUTER_DEBUG
+	depends on MSM_ONCRPCROUTER
+	default y
+	bool "MSM debug ONCRPC router support"
+	help
+	  Support for debugging the ONCRPC router for communication
+	  between the ARM9 and ARM11
+
+config MSM_RPC_LOOPBACK_XPRT
+	depends on MSM_ONCRPCROUTER
+	default n
+	bool "MSM RPC local routing support"
+	help
+	  Support for routing RPC messages between APPS clients
+	  and APPS servers.  Helps in testing APPS RPC framework.
+
+if CPU_FREQ_MSM
+
+config MSM_CPU_FREQ_SET_MIN_MAX
+	bool "Set Min/Max CPU frequencies."
+	default n
+	help
+	  Allow setting min and max CPU frequencies. Sysfs can be used
+	  to override these values.
+
+config MSM_CPU_FREQ_MAX
+	int "Max CPU Frequency"
+	depends on MSM_CPU_FREQ_SET_MIN_MAX
+	default 384000
+
+config MSM_CPU_FREQ_MIN
+	int "Min CPU Frequency"
+	depends on MSM_CPU_FREQ_SET_MIN_MAX
+	default 245760
+
+endif # CPU_FREQ_MSM
+
+config ZEN_DECISION
+	bool "Zen Decision MPDecision Replacement"
+	depends on SMP && FB
+	default y
+	help
+	  MPDecision is a userspace service that does several functions
+	  related to CPU Frequency and CPU Hotplugging. Some of these are:
+	  - Remove cores when screen goes off
+	  - Enable cores when screen goes on
+	  - Raise CPU_MIN_FREQ to a fixed value for a few seconds on input
+  
+	  Zen Decision allows some of the MPDecison functions to be delegated
+	  to the kernel. Right now these are
+	  - Remove cores when screen goes off (after a configurable amount of time)
+	  - Enable cores when screen comes on (immediately)
+
+	  Zen Decision assumes the input boost function of MPDecision should be
+	  delegated to somewhere else in the kernel (Such as in CPU-BOOST)
+
+	  Enable this if you'd like the ability to disable MPDecision.
+
+config MSM_DEVFREQ_CPUBW
+	bool "Devfreq device for CPU<->DDR IB/AB BW voting"
+	depends on PM_DEVFREQ
+	select DEVFREQ_GOV_PERFORMANCE
+	select DEVFREQ_GOV_POWERSAVE
+	select DEVFREQ_GOV_USERSPACE
+	select DEVFREQ_GOV_MSM_CPUFREQ
+	default n
+	help
+	  Different devfreq governors use this devfreq device to make CPU to
+	  DDR IB/AB bandwidth votes. This driver provides a SoC topology
+	  agnostic interface to so that some of the devfreq governors can be
+	  shared across SoCs.
+
+config MSM_CPUFREQ_LIMIT
+ 	tristate "MSM CPU frequency limiter"
+ 	default n
+ 	help
+
+config CPU_VOLTAGE_CONTROL
+	bool "Userspace CPU Voltage Control"
+	default y
+	help
+	  This enables userspace CPU Voltage Control.
+
+config MSM_AVS_HW
+	bool "Enable Adaptive Voltage Scaling (AVS)"
+	default n
+	help
+	  Enable AVS hardware to fine tune voltage at each frequency. The
+	  AVS hardware blocks associated with each Qualcomm ARMv7 cores can
+	  fine tune the voltages based on the feedback from the ring
+	  oscillators.
+
+config RTAC
+	bool "MSM8K real-time audio calibration support"
+	default y
+	help
+	  Enable support for rtac. This enables calibration during
+	  audio operation
+
+config MSM_VREG_SWITCH_INVERTED
+	bool "Reverse vreg switch polarity"
+	default n
+	help
+	  Reverses the enable and disable for vreg switch.
+
+config MSM_DMA_TEST
+	tristate "MSM DMA test module"
+	default m
+	help
+	  Intended to be compiled as a module.  Provides a device node
+	  and ioctls for testing the MSM dma system.
+
+config USER_RESET_DEBUG
+	bool "KOR reset reason debug feature in user version"
+    default n
+    help
+        This option enables debugging log for B10 project.
+        This option provides reset history log in user version.
+        This option enable proc/reset_reason support
+        It's only support KOR Model
+
+
+config RTC_AUTO_PWRON
+	bool "RTC Auto Power on PM8xxx PMICs"
+	depends on ARCH_MSM
+	default n
+	help
+	  Support for the auto power on alarm on the PM8XXX PMIC.
+	  Say Y if you want to enable this feature.
+
+config RTC_AUTO_PWRON_PARAM
+	bool "RTC Auto Power on with param PM8xxx PMICs"
+	depends on RTC_AUTO_PWRON
+	default n
+	help
+	  This option is used to prevent invalid RTC alarm power on.
+	  Say Y if you want to enable this feature.
+
+config WIFI_CONTROL_FUNC
+	bool "Enable WiFi control function abstraction"
+	help
+	  Enables Power/Reset/Carddetect function abstraction
+>>>>>>> a1ced08... msm: add msm_zen_decision (bbedward) This adds a simple driver intended to allow the MPDecision service to be disabled. The driver is easily extendable, but currently it: - Can be enabled/disabled in /sys/kernel/zen_decision/enabled - On screen power OFF it removes all cpu cores after suspend_wait_time - On screen power ON it enables all cpu cores. - /sys/kernel/zen_decision/suspend_wait_time (ms) refers to how long we wait after screen is off to remove the cores (default 5s). This just to avoid removing cores in excess.
 
 	default MSM_DEBUG_UART_NONE
 
