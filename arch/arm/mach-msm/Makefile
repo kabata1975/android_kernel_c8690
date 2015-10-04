@@ -37,8 +37,6 @@ endif
 else
 obj-y	+= gpio.o
 endif
-<<<<<<< HEAD
-=======
 obj-$(CONFIG_MSM_MPM_OF) += mpm-of.o
 obj-$(CONFIG_MSM_RPM_STATS_LOG) += rpm_stats.o rpm_master_stat.o
 obj-$(CONFIG_MSM_RPM_RBCPR_STATS_V2_LOG) += rpm_rbcpr_stats_v2.o
@@ -104,4 +102,4 @@ obj-$(CONFIG_INTELLI_HOTPLUG) += intelli_hotplug.o
 obj-$(CONFIG_MSM_CPUFREQ_LIMIT) += cpufreq_limit.o
 obj-$(CONFIG_FORCE_FAST_CHARGE) += fastchg.o
 obj-$(CONFIG_ZEN_DECISION) += msm_zen_decision.o
->>>>>>> a1ced08... msm: add msm_zen_decision (bbedward) This adds a simple driver intended to allow the MPDecision service to be disabled. The driver is easily extendable, but currently it: - Can be enabled/disabled in /sys/kernel/zen_decision/enabled - On screen power OFF it removes all cpu cores after suspend_wait_time - On screen power ON it enables all cpu cores. - /sys/kernel/zen_decision/suspend_wait_time (ms) refers to how long we wait after screen is off to remove the cores (default 5s). This just to avoid removing cores in excess.
+

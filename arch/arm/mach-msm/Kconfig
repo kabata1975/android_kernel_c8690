@@ -173,8 +173,7 @@ config MSM_DEBUG_UART
 if HAS_MSM_DEBUG_UART_PHYS
 choice
 	prompt "Debug UART"
-<<<<<<< HEAD
-=======
+
 	depends on DEBUG_LL
 
 	config DEBUG_MSM8974_UART
@@ -576,7 +575,6 @@ config WIFI_CONTROL_FUNC
 	bool "Enable WiFi control function abstraction"
 	help
 	  Enables Power/Reset/Carddetect function abstraction
->>>>>>> a1ced08... msm: add msm_zen_decision (bbedward) This adds a simple driver intended to allow the MPDecision service to be disabled. The driver is easily extendable, but currently it: - Can be enabled/disabled in /sys/kernel/zen_decision/enabled - On screen power OFF it removes all cpu cores after suspend_wait_time - On screen power ON it enables all cpu cores. - /sys/kernel/zen_decision/suspend_wait_time (ms) refers to how long we wait after screen is off to remove the cores (default 5s). This just to avoid removing cores in excess.
 
 	default MSM_DEBUG_UART_NONE
 
@@ -591,7 +589,7 @@ config WIFI_CONTROL_FUNC
 
 	config MSM_DEBUG_UART3
 		bool "UART3"
-endchoice
+
 endif
 
 config MSM_SMD_PKG3
