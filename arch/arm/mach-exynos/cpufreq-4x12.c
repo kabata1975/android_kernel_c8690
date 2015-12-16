@@ -21,16 +21,21 @@
 #include <mach/pmu.h>
 #include <mach/cpufreq.h>
 #include <mach/asv.h>
-#include <mach/sec_debug.h>
 
 #include <plat/clock.h>
 #include <plat/cpu.h>
+
+#ifdef CONFIG_EXYNOS4X12_1800MHZ_SUPPORT
+#define CPUFREQ_LEVEL_END	(L16 + 1)
+#else
+#define CPUFREQ_LEVEL_END	(L15 + 1)
+#endif
 
 #undef PRINT_DIV_VAL
 
 #undef ENABLE_CLKOUT
 
-static int max_support_idx;
+static int max_support_idx = L0;
 static int min_support_idx = (CPUFREQ_LEVEL_END - 1);
 static struct clk *cpu_clk;
 static struct clk *moutcore;
@@ -46,7 +51,9 @@ struct cpufreq_clkdiv {
 
 unsigned int exynos4x12_volt_table[CPUFREQ_LEVEL_END];
 
+#ifdef CONFIG_EXYNOS4X12_1800MHZ_SUPPORT
 static struct cpufreq_frequency_table exynos4x12_freq_table[] = {
+
 	{L0, 1800*1000},
 	{L1, 1704*1000},
 	{L2, 1600*1000},
@@ -65,7 +72,31 @@ static struct cpufreq_frequency_table exynos4x12_freq_table[] = {
 	{L15, 300*1000},
 	{L16, 200*1000},
 	{0, CPUFREQ_TABLE_END},
+
 };
+#else
+static struct cpufreq_frequency_table exynos4x12_freq_table[] = {
+
+	{L0, 1704*1000},
+	{L1, 1600*1000},
+	{L2, 1500*1000},
+	{L3, 1400*1000},
+	{L4, 1300*1000},
+	{L5, 1200*1000},
+	{L6, 1100*1000},
+	{L7, 1000*1000},
+	{L8, 900*1000},
+	{L9, 800*1000},
+	{L10, 700*1000},
+	{L11, 600*1000},
+	{L12, 500*1000},
+	{L13, 400*1000},
+	{L14, 300*1000},
+	{L15, 200*1000},
+	{0, CPUFREQ_TABLE_END},
+
+};
+#endif
 
 static struct cpufreq_clkdiv exynos4x12_clkdiv_table[CPUFREQ_LEVEL_END];
 
@@ -121,6 +152,66 @@ static unsigned int clkdiv_cpu0_4212[CPUFREQ_LEVEL_END][8] = {
 	{ 0, 1, 3, 0, 1, 1, 1, 0 },
 };
 
+#ifdef CONFIG_EXYNOS4X12_1800MHZ_SUPPORT
+static unsigned int clkdiv_cpu0_4412[CPUFREQ_LEVEL_END][8] = {
+	/*
+	 * Clock divider value for following
+	 * { DIVCORE, DIVCOREM0, DIVCOREM1, DIVPERIPH,
+	 *		DIVATB, DIVPCLK_DBG, DIVAPLL, DIVCORE2 }
+	 */
+	
+	/* ARM L1: 1800Mhz */
+	{ 0, 4, 7, 0, 7, 1, 7, 0 },
+
+	/* ARM L2: 1700Mhz */
+	{ 0, 4, 7, 0, 7, 1, 7, 0 },
+
+	/* ARM L3: 1600Mhz */
+	{ 0, 3, 7, 0, 6, 1, 7, 0 },
+
+	/* ARM L4: 1500Mhz */
+	{ 0, 3, 7, 0, 6, 1, 7, 0 },
+
+	/* ARM L5: 1400Mhz */
+	{ 0, 3, 7, 0, 6, 1, 6, 0 },
+
+	/* ARM L6: 1300Mhz */
+	{ 0, 3, 7, 0, 5, 1, 6, 0 },
+
+	/* ARM L7: 1200Mhz */
+	{ 0, 3, 7, 0, 5, 1, 5, 0 },
+
+	/* ARM L8: 1100MHz */
+	{ 0, 3, 6, 0, 4, 1, 5, 0 },
+
+	/* ARM L9: 1000MHz */
+	{ 0, 2, 5, 0, 4, 1, 4, 0 },
+
+	/* ARM L10: 900MHz */
+	{ 0, 2, 5, 0, 3, 1, 4, 0 },
+
+	/* ARM L11: 800MHz */
+	{ 0, 2, 5, 0, 3, 1, 3, 0 },
+
+	/* ARM L12: 700MHz */
+	{ 0, 2, 4, 0, 3, 1, 3, 0 },
+
+	/* ARM L13: 600MHz */
+	{ 0, 2, 4, 0, 3, 1, 2, 0 },
+
+	/* ARM L14: 500MHz */
+	{ 0, 2, 4, 0, 3, 1, 2, 0 },
+
+	/* ARM L15: 400MHz */
+	{ 0, 2, 4, 0, 3, 1, 1, 0 },
+
+	/* ARM L16: 300MHz */
+	{ 0, 2, 4, 0, 2, 1, 1, 0 },
+
+	/* ARM L17: 200MHz */
+	{ 0, 1, 3, 0, 1, 1, 1, 0 },
+};
+#else
 static unsigned int clkdiv_cpu0_4412[CPUFREQ_LEVEL_END][8] = {
 	/*
 	 * Clock divider value for following
@@ -128,57 +219,55 @@ static unsigned int clkdiv_cpu0_4412[CPUFREQ_LEVEL_END][8] = {
 	 *		DIVATB, DIVPCLK_DBG, DIVAPLL, DIVCORE2 }
 	 */
 
-	/* ARM L0: 1800Mhz */
+	/* ARM L2: 1700Mhz */
 	{ 0, 4, 7, 0, 7, 1, 7, 0 },
 
-	/* ARM L1: 1700Mhz */
-	{ 0, 4, 7, 0, 7, 1, 7, 0 },
-
-	/* ARM L2: 1600Mhz */
-	{ 0, 4, 7, 0, 6, 1, 7, 0 },
-
-	/* ARM L3: 1500Mhz */
+	/* ARM L3: 1600Mhz */
 	{ 0, 3, 7, 0, 6, 1, 7, 0 },
 
-	/* ARM L4: 1400Mhz */
+	/* ARM L4: 1500Mhz */
+	{ 0, 3, 7, 0, 6, 1, 7, 0 },
+
+	/* ARM L5: 1400Mhz */
 	{ 0, 3, 7, 0, 6, 1, 6, 0 },
 
-	/* ARM L5: 1300Mhz */
+	/* ARM L6: 1300Mhz */
 	{ 0, 3, 7, 0, 5, 1, 6, 0 },
 
-	/* ARM L6: 1200Mhz */
+	/* ARM L7: 1200Mhz */
 	{ 0, 3, 7, 0, 5, 1, 5, 0 },
 
-	/* ARM L7: 1100MHz */
+	/* ARM L8: 1100MHz */
 	{ 0, 3, 6, 0, 4, 1, 5, 0 },
 
-	/* ARM L8: 1000MHz */
+	/* ARM L9: 1000MHz */
 	{ 0, 2, 5, 0, 4, 1, 4, 0 },
 
-	/* ARM L9: 900MHz */
+	/* ARM L10: 900MHz */
 	{ 0, 2, 5, 0, 3, 1, 4, 0 },
 
-	/* ARM L10: 800MHz */
+	/* ARM L11: 800MHz */
 	{ 0, 2, 5, 0, 3, 1, 3, 0 },
 
-	/* ARM L11: 700MHz */
+	/* ARM L12: 700MHz */
 	{ 0, 2, 4, 0, 3, 1, 3, 0 },
 
-	/* ARM L12: 600MHz */
+	/* ARM L13: 600MHz */
 	{ 0, 2, 4, 0, 3, 1, 2, 0 },
 
-	/* ARM L13: 500MHz */
+	/* ARM L14: 500MHz */
 	{ 0, 2, 4, 0, 3, 1, 2, 0 },
 
-	/* ARM L14: 400MHz */
+	/* ARM L15: 400MHz */
 	{ 0, 2, 4, 0, 3, 1, 1, 0 },
 
-	/* ARM L15: 300MHz */
+	/* ARM L16: 300MHz */
 	{ 0, 2, 4, 0, 2, 1, 1, 0 },
 
-	/* ARM L16: 200MHz */
+	/* ARM L17: 200MHz */
 	{ 0, 1, 3, 0, 1, 1, 1, 0 },
 };
+#endif
 
 static unsigned int clkdiv_cpu1_4212[CPUFREQ_LEVEL_END][2] = {
 	/* Clock divider value for following
@@ -230,122 +319,236 @@ static unsigned int clkdiv_cpu1_4212[CPUFREQ_LEVEL_END][2] = {
 	{ 3, 0 },
 };
 
+#ifdef CONFIG_EXYNOS4X12_1800MHZ_SUPPORT
+static unsigned int clkdiv_cpu1_4412[CPUFREQ_LEVEL_END][3] = {
+	/* Clock divider value for following
+	 * { DIVCOPY, DIVHPM, DIVCORES }
+	 */
+	
+	/* ARM L1: 1800MHz */
+	{ 7, 0, 7 },
+
+	/* ARM L2: 1700MHz */
+	{ 7, 0, 7 },
+
+	/* ARM L3: 1600MHz */
+	{ 6, 0, 7 },
+
+	/* ARM L4: 1500MHz */
+	{ 6, 0, 7 },
+
+	/* ARM L5: 1400MHz */
+	{ 6, 0, 6 },
+
+	/* ARM L6: 1300MHz */
+	{ 5, 0, 6 },
+
+	/* ARM L7: 1200MHz */
+	{ 5, 0, 5 },
+
+	/* ARM L8: 1100MHz */
+	{ 4, 0, 5 },
+
+	/* ARM L9: 1000MHz */
+	{ 4, 0, 4 },
+
+	/* ARM L10: 900MHz */
+	{ 3, 0, 4 },
+
+	/* ARM L11: 800MHz */
+	{ 3, 0, 3 },
+
+	/* ARM L12: 700MHz */
+	{ 3, 0, 3 },
+
+	/* ARM L13: 600MHz */
+	{ 3, 0, 2 },
+
+	/* ARM L14: 500MHz */
+	{ 3, 0, 2 },
+
+	/* ARM L15: 400MHz */
+	{ 3, 0, 1 },
+
+	/* ARM L16: 300MHz */
+	{ 3, 0, 1 },
+
+	/* ARM L17: 200MHz */
+	{ 3, 0, 0 },
+};
+#else
 static unsigned int clkdiv_cpu1_4412[CPUFREQ_LEVEL_END][3] = {
 	/* Clock divider value for following
 	 * { DIVCOPY, DIVHPM, DIVCORES }
 	 */
 
-	/* ARM L2: 1800MHz */
+	/* ARM L2: 1700MHz */
 	{ 7, 0, 7 },
 
-	/* ARM L3: 1700MHz */
-	{ 7, 0, 7 },
-
-	/* ARM L4: 1600MHz */
+	/* ARM L3: 1600MHz */
 	{ 6, 0, 7 },
 
-	/* ARM L5: 1500MHz */
+	/* ARM L4: 1500MHz */
 	{ 6, 0, 7 },
 
-	/* ARM L6: 1400MHz */
+	/* ARM L5: 1400MHz */
 	{ 6, 0, 6 },
 
-	/* ARM L7: 1300MHz */
+	/* ARM L6: 1300MHz */
 	{ 5, 0, 6 },
 
-	/* ARM L8: 1200MHz */
+	/* ARM L7: 1200MHz */
 	{ 5, 0, 5 },
 
-	/* ARM L9: 1100MHz */
+	/* ARM L8: 1100MHz */
 	{ 4, 0, 5 },
 
-	/* ARM L10: 1000MHz */
+	/* ARM L9: 1000MHz */
 	{ 4, 0, 4 },
 
-	/* ARM L11: 900MHz */
+	/* ARM L10: 900MHz */
 	{ 3, 0, 4 },
 
-	/* ARM L12: 800MHz */
+	/* ARM L11: 800MHz */
 	{ 3, 0, 3 },
 
-	/* ARM L13: 700MHz */
+	/* ARM L12: 700MHz */
 	{ 3, 0, 3 },
 
-	/* ARM L14: 600MHz */
+	/* ARM L13: 600MHz */
 	{ 3, 0, 2 },
 
-	/* ARM L15: 500MHz */
+	/* ARM L14: 500MHz */
 	{ 3, 0, 2 },
 
-	/* ARM L16: 400MHz */
+	/* ARM L15: 400MHz */
 	{ 3, 0, 1 },
 
-	/* ARM L17: 300MHz */
+	/* ARM L16: 300MHz */
 	{ 3, 0, 1 },
 
-	/* ARM L18: 200MHz */
+	/* ARM L17: 200MHz */
 	{ 3, 0, 0 },
 };
+#endif
 
+#ifdef CONFIG_EXYNOS4X12_1800MHZ_SUPPORT
 static unsigned int exynos4x12_apll_pms_table[CPUFREQ_LEVEL_END] = {
-	/* APLL FOUT L2: 1800MHz */
+  
+	/* APLL FOUT L1: 1800MHz */
 	((300<<16)|(4<<8)|(0x0)),
 
-	/* APLL FOUT L3: 1704MHz */
+	/* APLL FOUT L2: 1704MHz */
 	((213<<16)|(3<<8)|(0x0)),
 
-	/* APLL FOUT L4: 1600MHz */
+	/* APLL FOUT L3: 1600MHz */
 	((200<<16)|(3<<8)|(0x0)),
 
-	/* APLL FOUT L5: 1500MHz */
+	/* APLL FOUT L4: 1500MHz */
 	((250<<16)|(4<<8)|(0x0)),
 
-	/* APLL FOUT L6: 1400MHz */
+	/* APLL FOUT L5: 1400MHz */
 	((175<<16)|(3<<8)|(0x0)),
 
-	/* APLL FOUT L7: 1300MHz */
+	/* APLL FOUT L6: 1300MHz */
 	((325<<16)|(6<<8)|(0x0)),
 
-	/* APLL FOUT L8: 1200MHz */
+	/* APLL FOUT L7: 1200MHz */
 	((200<<16)|(4<<8)|(0x0)),
 
-	/* APLL FOUT L9: 1100MHz */
+	/* APLL FOUT L8: 1100MHz */
 	((275<<16)|(6<<8)|(0x0)),
 
-	/* APLL FOUT L10: 1000MHz */
+	/* APLL FOUT L9: 1000MHz */
 	((125<<16)|(3<<8)|(0x0)),
 
-	/* APLL FOUT L11: 900MHz */
+	/* APLL FOUT L10: 900MHz */
 	((150<<16)|(4<<8)|(0x0)),
 
-	/* APLL FOUT L12: 800MHz */
+	/* APLL FOUT L11: 800MHz */
 	((100<<16)|(3<<8)|(0x0)),
 
-	/* APLL FOUT L13: 700MHz */
+	/* APLL FOUT L12: 700MHz */
 	((175<<16)|(3<<8)|(0x1)),
 
-	/* APLL FOUT L14: 600MHz */
+	/* APLL FOUT L13: 600MHz */
 	((200<<16)|(4<<8)|(0x1)),
 
-	/* APLL FOUT L15: 500MHz */
+	/* APLL FOUT L14: 500MHz */
 	((125<<16)|(3<<8)|(0x1)),
 
-	/* APLL FOUT L16 400MHz */
+	/* APLL FOUT L15 400MHz */
 	((100<<16)|(3<<8)|(0x1)),
 
-	/* APLL FOUT L17: 300MHz */
+	/* APLL FOUT L16: 300MHz */
 	((200<<16)|(4<<8)|(0x2)),
 
-	/* APLL FOUT L18: 200MHz */
+	/* APLL FOUT L17: 200MHz */
 	((100<<16)|(3<<8)|(0x2)),
 
 };
+#else
+static unsigned int exynos4x12_apll_pms_table[CPUFREQ_LEVEL_END] = {
+
+	/* APLL FOUT L2: 1704MHz */
+	((213<<16)|(3<<8)|(0x0)),
+
+	/* APLL FOUT L3: 1600MHz */
+	((200<<16)|(3<<8)|(0x0)),
+
+	/* APLL FOUT L4: 1500MHz */
+	((250<<16)|(4<<8)|(0x0)),
+
+	/* APLL FOUT L5: 1400MHz */
+	((175<<16)|(3<<8)|(0x0)),
+
+	/* APLL FOUT L6: 1300MHz */
+	((325<<16)|(6<<8)|(0x0)),
+
+	/* APLL FOUT L7: 1200MHz */
+	((200<<16)|(4<<8)|(0x0)),
+
+	/* APLL FOUT L8: 1100MHz */
+	((275<<16)|(6<<8)|(0x0)),
+
+	/* APLL FOUT L9: 1000MHz */
+	((125<<16)|(3<<8)|(0x0)),
+
+	/* APLL FOUT L10: 900MHz */
+	((150<<16)|(4<<8)|(0x0)),
+
+	/* APLL FOUT L11: 800MHz */
+	((100<<16)|(3<<8)|(0x0)),
+
+	/* APLL FOUT L12: 700MHz */
+	((175<<16)|(3<<8)|(0x1)),
+
+	/* APLL FOUT L13: 600MHz */
+	((200<<16)|(4<<8)|(0x1)),
+
+	/* APLL FOUT L14: 500MHz */
+	((125<<16)|(3<<8)|(0x1)),
+
+	/* APLL FOUT L15 400MHz */
+	((100<<16)|(3<<8)|(0x1)),
+
+	/* APLL FOUT L16: 300MHz */
+	((200<<16)|(4<<8)|(0x2)),
+
+	/* APLL FOUT L17: 200MHz */
+	((100<<16)|(3<<8)|(0x2)),
+
+};
+#endif
 
 /*
  * ASV group voltage table
  */
-
+#ifdef CONFIG_EXYNOS4X12_1800MHZ_SUPPORT
 #define NO_ABB_LIMIT	L13
+#else
+#define NO_ABB_LIMIT	L12
+#endif
 
 static const unsigned int asv_voltage_4212[CPUFREQ_LEVEL_END][12] = {
 	/*   ASV0,    ASV1,    ASV2,    ASV3,	 ASV4,	  ASV5,	   ASV6,    ASV7,    ASV8,    ASV9,   ASV10,   ASV11 */
@@ -371,47 +574,113 @@ static const unsigned int asv_voltage_s[CPUFREQ_LEVEL_END] = {
 	1050000, 1025000, 1000000, 1000000, 1000000, 950000, 950000
 };
 
+#ifdef CONFIG_EXYNOS4X12_1800MHZ_SUPPORT
 /* 20120210 DVFS table version */
 static const unsigned int asv_voltage_step_12_5[CPUFREQ_LEVEL_END][12] = {
 	/*   ASV0,    ASV1,    ASV2,    ASV3,	 ASV4,	  ASV5,	   ASV6,    ASV7,    ASV8,    ASV9,   ASV10,   ASV11 */
-	{ 1400000, 1400000, 1400000, 1400000, 1400000, 1400000,	1400000, 1400000, 1400000, 1400000, 1400000, 1400000 }, /* L0 1800MHz */
-	{ 1400000, 1400000, 1400000, 1400000, 1400000, 1400000,	1400000, 1400000, 1400000, 1387500, 1375000, 1362500 }, /* L1 1700MHz */
-	{ 1400000, 1400000, 1400000, 1400000, 1387500, 1387500,	1375000, 1362500, 1350000, 1337500, 1325000, 1312500 }, /* L2 1600MHz */
-	{ 1387500, 1375000, 1362500, 1350000, 1337500, 1325000,	1312500, 1300000, 1287500, 1275000, 1262500, 1250000 }, /* L3 1500MHz */
-	{ 1325000, 1312500, 1300000, 1287500, 1300000, 1287500,	1275000, 1250000, 1250000, 1237500, 1225000, 1212500 }, /* L4 1400MHz */
-	{ 1300000, 1275000, 1237500, 1237500, 1250000, 1250000,	1237500, 1212500, 1200000, 1200000, 1187500, 1175000 }, /* L5 1300MHz */
-	{ 1225000, 1212500, 1200000, 1187500, 1200000, 1187500,	1175000, 1150000, 1137500, 1125000, 1125000, 1112500 }, /* L6 1200MHz */
-	{ 1175000, 1162500, 1150000, 1137500, 1150000, 1137500,	1125000, 1100000, 1100000, 1075000, 1075000, 1062500 }, /* L7 1100MHz */
-	{ 1125000, 1112500, 1100000, 1087500, 1100000, 1087500,	1075000, 1050000, 1037500, 1025000, 1025000, 1012500 }, /* L8 1000MHz */
-	{ 1075000, 1062500, 1050000, 1050000, 1050000, 1037500,	1025000, 1012500, 1000000,  987500,  987500,  975000 }, /* L9  900MHz */
-	{ 1037500, 1025000, 1000000, 1000000, 1000000,  987500,	 975000,  962500,  962500,  962500,  962500,  950000 }, /* L10 800MHz */
-	{ 1012500, 1000000,  975000,  975000,  975000,  975000,	 962500,  962500,  950000,  950000,  950000,  937500 }, /* L11 700MHz */
-	{ 1000000,  987500,  962500,  962500,  962500,  962500,	 950000,  950000,  937500,  937500,  937500,  925000 }, /* L12 600MHz */
-	{  987500,  975000,  950000,  937500,  950000,  937500,	 937500,  937500,  912500,  912500,  912500,  900000 }, /* L13 500MHz */
-	{  975000,  962500,  950000,  925000,  950000,  925000,	 925000,  925000,  900000,  900000,  900000,  887500 }, /* L14 400MHz */
-	{  950000,  937500,  925000,  900000,  925000,  900000,	 900000,  900000,  900000,  887500,  875000,  862500 }, /* L15 300MHz */
-	{  925000,  912500,  900000,  900000,  900000,  900000,	 900000,  900000,  887500,  875000,  875000,  862500 }, /* L16 200MHz */
+	{ 1400000, 1400000, 1325000, 1400000, 1400000, 1400000,	1400000, 1400000, 1400000, 1400000, 1400000, 1400000 }, /* L1 1800MHz */
+	{ 1400000, 1400000, 1325000, 1400000, 1400000, 1400000,	1400000, 1400000, 1400000, 1387500, 1375000, 1362500 }, /* L2 1700MHz */
+	{ 1400000, 1400000, 1325000, 1400000, 1387500, 1387500,	1375000, 1362500, 1350000, 1337500, 1325000, 1312500 }, /* L3 1600MHz */
+	{ 1387500, 1375000, 1287500, 1350000, 1337500, 1325000,	1312500, 1300000, 1287500, 1275000, 1262500, 1250000 }, /* L4 1500MHz */
+	{ 1325000, 1312500, 1225000, 1287500, 1300000, 1287500,	1275000, 1250000, 1250000, 1237500, 1225000, 1212500 }, /* L5 1400MHz */
+	{ 1300000, 1275000, 1162500, 1237500, 1250000, 1250000,	1237500, 1212500, 1200000, 1200000, 1187500, 1175000 }, /* L6 1300MHz */
+	{ 1225000, 1212500, 1125000, 1187500, 1200000, 1187500,	1175000, 1150000, 1137500, 1125000, 1125000, 1112500 }, /* L7 1200MHz */
+	{ 1175000, 1162500, 1075000, 1137500, 1150000, 1137500,	1125000, 1100000, 1100000, 1075000, 1075000, 1062500 }, /* L8 1100MHz */
+	{ 1125000, 1112500, 1025000, 1087500, 1100000, 1087500,	1075000, 1050000, 1037500, 1025000, 1025000, 1012500 }, /* L9 1000MHz */
+	{ 1075000, 1062500, 975000, 1050000, 1050000, 1037500,	1025000, 1012500, 1000000,  987500,  987500,  975000 }, /* L10  900MHz */
+	{ 1037500, 1025000, 925000, 1000000, 1000000,  987500,	 975000,  962500,  962500,  962500,  962500,  950000 }, /* L11 800MHz */
+	{ 1012500, 1000000,  900000,  975000,  975000,  975000,	 962500,  962500,  950000,  950000,  950000,  937500 }, /* L12 700MHz */
+	{ 1000000,  987500,  887500,  962500,  962500,  962500,	 950000,  950000,  937500,  937500,  937500,  925000 }, /* L13 600MHz */
+	{  987500,  975000,  875000,  937500,  950000,  937500,	 937500,  937500,  912500,  912500,  912500,  900000 }, /* L14 500MHz */
+	{  975000,  962500,  875000,  925000,  950000,  925000,	 925000,  925000,  900000,  900000,  900000,  887500 }, /* L15 400MHz */
+	{  950000,  937500,  850000,  900000,  925000,  900000,	 900000,  900000,  900000,  887500,  875000,  862500 }, /* L16 300MHz */
+	{  925000,  912500,  825000,  900000,  900000,  900000,	 900000,  900000,  887500,  875000,  875000,  862500 }, /* L17 200MHz */
 };
-/* 20120927 DVFS table for pega prime */
+
+
+/* 20120725 DVFS table for pega prime */
 static const unsigned int asv_voltage_step_12_5_rev2[CPUFREQ_LEVEL_END][13] = {
 	/*   ASV0,    ASV1,    ASV2,    ASV3,	 ASV4,	  ASV5,	   ASV6,    ASV7,    ASV8,    ASV9,   ASV10,   ASV11    ASV12 */
-	{ 1400000, 1400000, 1400000, 1400000, 1400000, 1400000,	1400000, 1400000, 1400000, 1400000, 1400000, 1400000, 1400000}, /* L0 1800MHz */
-	{ 1400000, 1400000, 1400000, 1400000, 1400000, 1400000,	1400000, 1400000, 1400000, 1387500, 1375000, 1362500, 1350000}, /* L1 1700MHz */
-	{ 1312500, 1312500, 1312500, 1312500, 1300000, 1287500, 1275000, 1262500, 1250000, 1237500, 1212500, 1200000, 1187500 }, /* L2 1600MHz */
-	{ 1275000, 1262500, 1262500, 1262500, 1250000, 1237500,	1225000, 1212500, 1200000, 1187500, 1162500, 1150000, 1137500 }, /* L3 1500MHz */
-	{ 1237500, 1225000, 1225000, 1225000, 1212500, 1200000, 1187500, 1175000, 1162500, 1150000, 1125000, 1112500, 1100000 }, /* L4 1400MHz */
-	{ 1187500, 1175000, 1175000, 1175000, 1162500, 1150000, 1137500, 1125000, 1112500, 1100000, 1075000, 1062500, 1050000 }, /* L5 1300MHz */
-	{ 1150000, 1137500, 1137500, 1137500, 1125000, 1112500, 1100000, 1087500, 1075000, 1062500, 1037500, 1025000, 1012500 }, /* L6 1200MHz */
-	{ 1112500, 1100000, 1100000, 1100000, 1087500, 1075000, 1062500, 1050000, 1037500, 1025000, 1000000,  987500,  975000 }, /* L7 1100MHz */
-	{ 1087500, 1075000, 1075000, 1075000, 1062500, 1050000, 1037500, 1025000, 1012500, 1000000,  975000,  962500,  950000 }, /* L8 1000MHz */
-	{ 1062500, 1050000, 1050000, 1050000, 1037500, 1025000, 1012500, 1000000,  987500,  975000,  950000,  937500,  925000 }, /* L9  900MHz */
-	{ 1025000, 1012500, 1012500, 1012500, 1000000,  987500,  975000,  962500,  950000,  937500,  912500,  900000,  887500 }, /* L10 800MHz */
-	{ 1000000,  987500,  987500,  987500,  975000,  962500,  950000,  937500,  925000,  912500,  887500,  887500,  887500 }, /* L11 700MHz */
-	{  975000,  962500,  962500,  962500,  950000,  937500,  925000,  912500,  900000,  887500,  875000,  875000,  875000 }, /* L12 600MHz */
-	{  962500,  950000,  950000,  950000,  937500,  925000,  912500,  900000,  887500,  887500,  875000,  875000,  875000 }, /* L13 500MHz */
-	{  950000,  937500,  937500,  937500,  925000,  912500,  900000,  887500,  887500,  887500,  875000,  875000,  875000 }, /* L14 400MHz */
-	{  937500,  925000,  925000,  925000,  912500,  900000,  887500,  887500,  887500,  887500,  875000,  875000,  875000 }, /* L15 300MHz */
-	{  925000,  912500,  912500,  912500,  900000,  887500,  887500,  887500,  887500,  887500,  875000,  875000,  875000 }, /* L16 200MHz */
+	{ 1400000, 1400000, 1400000, 1400000, 1400000, 1400000,	1400000, 1400000, 1400000, 1400000, 1400000, 1400000, 1400000}, /* L1 1800MHz */
+	{ 1400000, 1400000, 1400000, 1400000, 1400000, 1400000,	1400000, 1400000, 1400000, 1387500, 1375000, 1362500, 1350000}, /* L2 1700MHz */
+	{ 1312500, 1312500, 1312500, 1312500, 1300000, 1287500, 1275000, 1262500, 1250000, 1237500, 1212500, 1200000, 1187500 }, /* L3 1600MHz */
+	{ 1275000, 1262500, 1262500, 1262500, 1250000, 1237500,	1225000, 1212500, 1200000, 1187500, 1162500, 1150000, 1137500 }, /* L4 1500MHz */
+	{ 1237500, 1225000, 1225000, 1225000, 1212500, 1200000, 1187500, 1175000, 1162500, 1150000, 1125000, 1112500, 1100000 }, /* L5 1400MHz */
+	{ 1187500, 1175000, 1175000, 1175000, 1162500, 1150000, 1137500, 1125000, 1112500, 1100000, 1075000, 1062500, 1050000 }, /* L6 1300MHz */
+	{ 1150000, 1137500, 1137500, 1137500, 1125000, 1112500, 1100000, 1087500, 1075000, 1062500, 1037500, 1025000, 1012500 }, /* L7 1200MHz */
+	{ 1112500, 1100000, 1100000, 1100000, 1087500, 1075000, 1062500, 1050000, 1037500, 1025000, 1000000,  987500,  975000 }, /* L8 1100MHz */
+	{ 1087500, 1075000, 1075000, 1075000, 1062500, 1050000, 1037500, 1025000, 1012500, 1000000,  975000,  962500,  950000 }, /* L9 1000MHz */
+	{ 1062500, 1050000, 1050000, 1050000, 1037500, 1025000, 1012500, 1000000,  987500,  975000,  950000,  937500,  925000 }, /* L10  900MHz */
+	{ 1025000, 1012500, 1012500, 1012500, 1000000,  987500,  975000,  962500,  950000,  937500,  912500,  900000,  887500 }, /* L11 800MHz */
+	{ 1000000,  987500,  987500,  987500,  975000,  962500,  950000,  937500,  925000,  912500,  887500,  887500,  887500 }, /* L12 700MHz */
+	{  975000,  962500,  962500,  962500,  950000,  937500,  925000,  912500,  900000,  887500,  875000,  875000,  875000 }, /* L13 600MHz */
+	{  962500,  950000,  950000,  950000,  937500,  925000,  912500,  900000,  887500,  887500,  875000,  875000,  875000 }, /* L14 500MHz */
+	{  950000,  937500,  937500,  937500,  925000,  912500,  900000,  887500,  887500,  887500,  875000,  875000,  875000 }, /* L15 400MHz */
+	{  937500,  925000,  925000,  925000,  912500,  900000,  887500,  887500,  887500,  887500,  875000,  875000,  875000 }, /* L16 300MHz */
+	{  925000,  912500,  912500,  912500,  900000,  887500,  887500,  887500,  887500,  887500,  875000,  875000,  875000 }, /* L17 200MHz */
+};
+#else
+/* 20120210 DVFS table version */
+static const unsigned int asv_voltage_step_12_5[CPUFREQ_LEVEL_END][12] = {
+	/*   ASV0,    ASV1,    ASV2,    ASV3,	 ASV4,	  ASV5,	   ASV6,    ASV7,    ASV8,    ASV9,   ASV10,   ASV11 */
+	{ 1400000, 1400000, 1325000, 1400000, 1400000, 1400000,	1400000, 1400000, 1400000, 1387500, 1375000, 1362500 }, /* L2 1700MHz */
+	{ 1400000, 1400000, 1325000, 1400000, 1387500, 1387500,	1375000, 1362500, 1350000, 1337500, 1325000, 1312500 }, /* L3 1600MHz */
+	{ 1387500, 1375000, 1287500, 1350000, 1337500, 1325000,	1312500, 1300000, 1287500, 1275000, 1262500, 1250000 }, /* L4 1500MHz */
+	{ 1325000, 1312500, 1225000, 1287500, 1300000, 1287500,	1275000, 1250000, 1250000, 1237500, 1225000, 1212500 }, /* L5 1400MHz */
+	{ 1300000, 1275000, 1162500, 1237500, 1250000, 1250000,	1237500, 1212500, 1200000, 1200000, 1187500, 1175000 }, /* L6 1300MHz */
+	{ 1225000, 1212500, 1125000, 1187500, 1200000, 1187500,	1175000, 1150000, 1137500, 1125000, 1125000, 1112500 }, /* L7 1200MHz */
+	{ 1175000, 1162500, 1075000, 1137500, 1150000, 1137500,	1125000, 1100000, 1100000, 1075000, 1075000, 1062500 }, /* L8 1100MHz */
+	{ 1125000, 1112500, 1025000, 1087500, 1100000, 1087500,	1075000, 1050000, 1037500, 1025000, 1025000, 1012500 }, /* L9 1000MHz */
+	{ 1075000, 1062500, 975000, 1050000, 1050000, 1037500,	1025000, 1012500, 1000000,  987500,  987500,  975000 }, /* L10  900MHz */
+	{ 1037500, 1025000, 925000, 1000000, 1000000,  987500,	 975000,  962500,  962500,  962500,  962500,  950000 }, /* L11 800MHz */
+	{ 1012500, 1000000,  900000,  975000,  975000,  975000,	 962500,  962500,  950000,  950000,  950000,  937500 }, /* L12 700MHz */
+	{ 1000000,  987500,  887500,  962500,  962500,  962500,	 950000,  950000,  937500,  937500,  937500,  925000 }, /* L13 600MHz */
+	{  987500,  975000,  875000,  937500,  950000,  937500,	 937500,  937500,  912500,  912500,  912500,  900000 }, /* L14 500MHz */
+	{  975000,  962500,  875000,  925000,  950000,  925000,	 925000,  925000,  900000,  900000,  900000,  887500 }, /* L15 400MHz */
+	{  950000,  937500,  850000,  900000,  925000,  900000,	 900000,  900000,  900000,  887500,  875000,  862500 }, /* L16 300MHz */
+	{  925000,  912500,  825000,  900000,  900000,  900000,	 900000,  900000,  887500,  875000,  875000,  862500 }, /* L17 200MHz */
+};
+
+
+/* 20120725 DVFS table for pega prime */
+static const unsigned int asv_voltage_step_12_5_rev2[CPUFREQ_LEVEL_END][13] = {
+	/*   ASV0,    ASV1,    ASV2,    ASV3,	 ASV4,	  ASV5,	   ASV6,    ASV7,    ASV8,    ASV9,   ASV10,   ASV11    ASV12 */
+	{ 1400000, 1400000, 1400000, 1400000, 1400000, 1400000,	1400000, 1400000, 1400000, 1387500, 1375000, 1362500, 1350000}, /* L2 1700MHz */
+	{ 1312500, 1312500, 1312500, 1312500, 1300000, 1287500, 1275000, 1262500, 1250000, 1237500, 1212500, 1200000, 1187500 }, /* L3 1600MHz */
+	{ 1275000, 1262500, 1262500, 1262500, 1250000, 1237500,	1225000, 1212500, 1200000, 1187500, 1162500, 1150000, 1137500 }, /* L4 1500MHz */
+	{ 1237500, 1225000, 1225000, 1225000, 1212500, 1200000, 1187500, 1175000, 1162500, 1150000, 1125000, 1112500, 1100000 }, /* L5 1400MHz */
+	{ 1187500, 1175000, 1175000, 1175000, 1162500, 1150000, 1137500, 1125000, 1112500, 1100000, 1075000, 1062500, 1050000 }, /* L6 1300MHz */
+	{ 1150000, 1137500, 1137500, 1137500, 1125000, 1112500, 1100000, 1087500, 1075000, 1062500, 1037500, 1025000, 1012500 }, /* L7 1200MHz */
+	{ 1112500, 1100000, 1100000, 1100000, 1087500, 1075000, 1062500, 1050000, 1037500, 1025000, 1000000,  987500,  975000 }, /* L8 1100MHz */
+	{ 1087500, 1075000, 1075000, 1075000, 1062500, 1050000, 1037500, 1025000, 1012500, 1000000,  975000,  962500,  950000 }, /* L9 1000MHz */
+	{ 1062500, 1050000, 1050000, 1050000, 1037500, 1025000, 1012500, 1000000,  987500,  975000,  950000,  937500,  925000 }, /* L10  900MHz */
+	{ 1025000, 1012500, 1012500, 1012500, 1000000,  987500,  975000,  962500,  950000,  937500,  912500,  900000,  887500 }, /* L11 800MHz */
+	{ 1000000,  987500,  987500,  987500,  975000,  962500,  950000,  937500,  925000,  912500,  887500,  887500,  887500 }, /* L12 700MHz */
+	{  975000,  962500,  962500,  962500,  950000,  937500,  925000,  912500,  900000,  887500,  875000,  875000,  875000 }, /* L13 600MHz */
+	{  962500,  950000,  950000,  950000,  937500,  925000,  912500,  900000,  887500,  887500,  875000,  875000,  875000 }, /* L14 500MHz */
+	{  950000,  937500,  937500,  937500,  925000,  912500,  900000,  887500,  887500,  887500,  875000,  875000,  875000 }, /* L15 400MHz */
+	{  937500,  925000,  925000,  925000,  912500,  900000,  887500,  887500,  887500,  887500,  875000,  875000,  875000 }, /* L16 300MHz */
+	{  925000,  912500,  912500,  912500,  900000,  887500,  887500,  887500,  887500,  887500,  875000,  875000,  875000 }, /* L17 200MHz */
+};
+#endif
+
+static const unsigned int asv_voltage_step_1ghz[CPUFREQ_LEVEL_END][12] = {
+	/*   ASV0,    ASV1,    ASV2,    ASV3,	 ASV4,	  ASV5,	   ASV6,    ASV7,    ASV8,    ASV9,   ASV10,   ASV11 */
+	{	0,       0,	  0,	   0,	    0,	     0,	      0,       0,       0,       0,	  0,       0 },	/* L0 - Not used */
+	{	0,       0,	  0,	   0,	    0,	     0,	      0,       0,       0,       0,	  0,       0 },	/* L1 - Not used */
+	{	0,       0,	  0,	   0,	    0,	     0,	      0,       0,       0,       0,	  0,       0 },	/* L2 - Not used */
+	{	0,       0,	  0,	   0,	    0,	     0,	      0,       0,       0,       0,	  0,       0 },	/* L3 - Not used */
+	{	0,       0,	  0,	   0,	    0,	     0,	      0,       0,       0,       0,	  0,       0 },	/* L4 - Not used */
+	{	0,       0,	  0,	   0,	    0,	     0,	      0,       0,       0,       0,	  0,       0 },	/* L5 - Not used */
+	{ 1200000, 1200000, 1200000, 1200000, 1125000, 1125000,	1125000, 1075000, 1075000, 1075000, 1075000, 1037500 },
+	{ 1150000, 1150000, 1150000, 1150000, 1075000, 1075000,	1075000, 1037500, 1037500, 1037500, 1037500, 1000000 },
+	{ 1100000, 1100000, 1100000, 1100000, 1025000, 1025000,	1025000,  987500,  987500,  987500,  987500,  975000 },
+	{ 1050000, 1050000, 1050000, 1050000, 1000000, 1000000,	1000000,  987500,  987500,  987500,  987500,  962500 },
+	{ 1025000, 1025000, 1025000, 1025000,  987500,  987500,	 987500,  975000,  975000,  975000,  975000,  950000 },
+	{ 1000000, 1000000, 1000000, 1000000,  975000,  975000,	 975000,  962500,  962500,  962500,  962500,  925000 },
+	{ 1000000, 1000000, 1000000, 1000000,  975000,  975000,	 975000,  950000,  950000,  950000,  950000,  912500 },
+	{  975000,  975000,  975000,  975000,  950000,  950000,	 950000,  925000,  925000,  925000,  925000,  887500 },
+	{  975000,  975000,  975000,  975000,  937500,  937500,	 937500,  925000,  925000,  925000,  925000,  887500 },
 };
 
 static void set_clkdiv(unsigned int div_index)
@@ -511,24 +780,15 @@ static void exynos4x12_set_frequency(unsigned int old_index,
 {
 	unsigned int tmp;
 
-	sec_debug_aux_log(SEC_DEBUG_AUXLOG_CPU_BUS_CLOCK_CHANGE,
-			"%s: old_index=%d, new_index=%d(%ps)",
-			__func__, old_index, new_index,
-			__builtin_return_address(0));
-
 	if (old_index > new_index) {
 		if (exynos4x12_volt_table[new_index] >= 950000 &&
 				need_dynamic_ema)
 				__raw_writel(0x101, EXYNOS4_EMA_CONF);
-#ifndef CONFIG_ABB_CONTROL
-		if ((samsung_rev() >= EXYNOS4412_REV_2_0)
+        if ((samsung_rev() >= EXYNOS4412_REV_2_0)
 			&& (exynos_result_of_asv > 2)
-			&& (old_index > L10) && (new_index <= L10)) {
+			&& (old_index > L8) && (new_index <= L8)) {
 			exynos4x12_set_abb_member(ABB_ARM, ABB_MODE_130V);
 		}
-#else
-		abb_target(ABB_ARM, exynos4x12_freq_table[new_index].frequency);
-#endif
 
 		if (!exynos4x12_pms_change(old_index, new_index)) {
 			/* 1. Change the system clock divider values */
@@ -562,38 +822,38 @@ static void exynos4x12_set_frequency(unsigned int old_index,
 			/* 2. Change the system clock divider values */
 			set_clkdiv(new_index);
 		}
-#ifndef CONFIG_ABB_CONTROL
+
 		if ((samsung_rev() >= EXYNOS4412_REV_2_0)
 			&& (exynos_result_of_asv > 2)
-			&& (old_index <= L10) && (new_index > L10)) {
+			&& (old_index <= L8) && (new_index > L8)) {
 			exynos4x12_set_abb_member(ABB_ARM, ABB_MODE_100V);
 		}
-#else
-		abb_target(ABB_ARM, exynos4x12_freq_table[new_index].frequency);
-#endif
+
 		if (exynos4x12_volt_table[new_index] < 950000 &&
 				need_dynamic_ema)
 			__raw_writel(0x404, EXYNOS4_EMA_CONF);
 	}
 
-#ifndef CONFIG_ABB_CONTROL
-	/* ABB value is changed in below case */
+    /* ABB value is changed in below case */
 	if (soc_is_exynos4412() && (exynos_result_of_asv > 3)) {
+#ifdef CONFIG_EXYNOS4X12_1800MHZ_SUPPORT
 		if (new_index == L16)
+#else
+		if (new_index == L15)
+#endif
 			exynos4x12_set_abb_member(ABB_ARM, ABB_MODE_100V);
 		else
 			exynos4x12_set_abb_member(ABB_ARM, ABB_MODE_130V);
 	}
-#endif
-
 }
 
-/* Get maximum cpufreq index of chip */
 static void __init set_volt_table(void)
 {
-	unsigned int i, tmp;
-
-	max_support_idx = L0;
+	unsigned int i, tmp; 
+/*
+	for (i = 0; i < max_support_idx; i++)
+		exynos4x12_freq_table[i].frequency = CPUFREQ_ENTRY_INVALID;
+*/
 
 	pr_info("DVFS : VDD_ARM Voltage table set with %d Group\n", exynos_result_of_asv);
 
@@ -611,9 +871,15 @@ static void __init set_volt_table(void)
 					exynos4x12_volt_table[i] =
 						asv_voltage_step_12_5_rev2[i][exynos_result_of_asv];
 			} else {
-				for (i = 0 ; i < CPUFREQ_LEVEL_END ; i++)
-					exynos4x12_volt_table[i] =
-						asv_voltage_step_12_5[i][exynos_result_of_asv];
+				if (exynos_armclk_max == 1000000) {
+					for (i = 0 ; i < CPUFREQ_LEVEL_END ; i++)
+						exynos4x12_volt_table[i] =
+							asv_voltage_step_1ghz[i][exynos_result_of_asv];
+				} else {
+					for (i = 0 ; i < CPUFREQ_LEVEL_END ; i++)
+						exynos4x12_volt_table[i] =
+							asv_voltage_step_12_5[i][exynos_result_of_asv];
+				}
 			}
 		} else {
 			pr_err("%s: Can't find SoC type \n", __func__);
@@ -626,20 +892,37 @@ static void __init set_volt_table(void)
 		if (tmp) {
 			pr_info("%s : special flag[%d]\n", __func__, tmp);
 			switch (tmp) {
+#ifdef CONFIG_EXYNOS4X12_1800MHZ_SUPPORT
 			case 1:
 				/* 500MHz fixed volt */
-				i = L11;
+				i = L13;
 				break;
 			case 2:
 				/* 700MHz fixed volt */
-				i = L9;
+				i = L11;
 				break;
 			case 3:
 				/* 800MHz fixed volt */
-				i = L8;
+				i = L10;
 				break;
 			default:
 				break;
+#else
+			case 1:
+				/* 500MHz fixed volt */
+				i = L12;
+				break;
+			case 2:
+				/* 700MHz fixed volt */
+				i = L10;
+				break;
+			case 3:
+				/* 800MHz fixed volt */
+				i = L9;
+				break;
+			default:
+				break;
+#endif
 			}
 
 			pr_info("ARM voltage locking at L%d\n", i);
@@ -657,21 +940,6 @@ static void __init set_volt_table(void)
 		}
 	}
 }
-
-/*
- * The values of the table is not correct.
- * Copied from C210 as prototype assuming that unmapping 512KiB
- * requires 128 DMA operations.
- */
-#ifdef CONFIG_SLP
-static struct dvfs_qos_info exynos4x12_dma_lat_qos[] = {
-	{ 118,	200000, L18 },
-	{ 40,	500000, L15 },
-	{ 24,	800000, L12 },
-	{ 16,	1000000, L10 },
-	{},
-};
-#endif
 
 int exynos4x12_cpufreq_init(struct exynos_dvfs_info *info)
 {
@@ -755,40 +1023,13 @@ int exynos4x12_cpufreq_init(struct exynos_dvfs_info *info)
 	}
 
 	info->mpll_freq_khz = rate;
-#ifdef CONFIG_SLP
-	/* S-Boot at 20120406 uses L7 at bootup */
-	/* L7 original / 800MHz is L10 in new table - af */
-	info->pm_lock_idx = L10;
-
-	/*
-	 * However, the bootup frequency might get changed anytime.
-	 * Thus, we'd like to get the value at bootup time.
-	 */
-	rate = clk_get_rate(cpu_clk) / 1000;
-	for (i = 0; exynos4x12_freq_table[i].frequency != CPUFREQ_TABLE_END;
-	     i++) {
-		if (exynos4x12_freq_table[i].frequency == rate) {
-			info->pm_lock_idx = exynos4x12_freq_table[i].index;
-			break;
-		}
-	}
-	pr_info("Bootup CPU Frequency = [%d] %dMHz\n", info->pm_lock_idx,
-		rate / 1000);
-#else
+#ifdef CONFIG_EXYNOS4X12_1800MHZ_SUPPORT
 	info->pm_lock_idx = L8;
+	info->pll_safe_idx = L9;
+#else
+	info->pm_lock_idx = L7;
+	info->pll_safe_idx = L8;
 #endif
-	/*
-	 * ARM clock source will be changed APLL to MPLL temporary
-	 * in exynos4x12_set_frequency.
-	 * To support MPLL, vdd_arm is supplied to voltage at frequency
-	 * higher than MPLL.
-	 * So, pll_safe_idx set to value based on MPLL clock.(800MHz or 880MHz)
-	 */
-	if (samsung_rev() >= EXYNOS4412_REV_2_0)
-		info->pll_safe_idx = L9;
-	else
-		info->pll_safe_idx = L10;
-
 	info->max_support_idx = max_support_idx;
 	info->min_support_idx = min_support_idx;
 	info->cpu_clk = cpu_clk;
@@ -801,12 +1042,17 @@ int exynos4x12_cpufreq_init(struct exynos_dvfs_info *info)
 #endif
 
 #ifdef ENABLE_CLKOUT
+#ifndef CONFIG_ANC_ES305
 	tmp = __raw_readl(EXYNOS4_CLKOUT_CMU_CPU);
 	tmp &= ~0xffff;
 	tmp |= 0x1904;
 	__raw_writel(tmp, EXYNOS4_CLKOUT_CMU_CPU);
 
-	exynos4_pmu_xclkout_set(1, XCLKOUT_CMU_CPU);
+	tmp = __raw_readl(S5P_PMU_DEBUG);
+	tmp &= ~0xf00;
+	tmp |= 0x900;
+	__raw_writel(tmp, S5P_PMU_DEBUG);
+#endif
 #endif
 
 	return 0;
@@ -825,3 +1071,183 @@ err_moutcore:
 	return -EINVAL;
 }
 EXPORT_SYMBOL(exynos4x12_cpufreq_init);
+
+//add voltage control interface primary code
+ssize_t show_UV_uV_table(struct cpufreq_policy *policy, char *buf) {
+	int i, len = 0;
+	if (buf)
+	{
+		for (i = exynos_info->max_support_idx; i<=exynos_info->min_support_idx; i++)
+		{
+			if(exynos_info->freq_table[i].frequency==CPUFREQ_ENTRY_INVALID) continue;
+			len += sprintf(buf + len, "%dmhz: %d mV\n", 
+				exynos_info->freq_table[i].frequency/1000,
+				exynos_info->volt_table[i]);
+		}
+	}
+	return len;
+}
+
+ssize_t show_UV_mV_table(struct cpufreq_policy *policy, char *buf) {
+	int i, len = 0;
+	if (buf)
+	{
+		for (i = exynos_info->max_support_idx; i<=exynos_info->min_support_idx; i++)
+		{
+			if(exynos_info->freq_table[i].frequency==CPUFREQ_ENTRY_INVALID) continue;
+			len += sprintf(buf + len, "%dmhz: %d mV\n", 
+				exynos_info->freq_table[i].frequency/1000,
+				((exynos_info->volt_table[i] % 1000) + exynos_info->volt_table[i])/1000);
+		}
+	}
+	return len;
+}
+
+#ifdef CONFIG_EXYNOS4X12_1800MHZ_SUPPORT
+ssize_t store_UV_uV_table(struct cpufreq_policy *policy, 
+				 const char *buf, size_t count) {
+
+	unsigned int ret = -EINVAL;
+	int i = 0;
+	int t[17];
+
+	ret = sscanf(buf, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
+		     &t[0],&t[1],&t[2],&t[3],&t[4],&t[5],&t[6],&t[7],&t[8],&t[9],&t[10],
+		     &t[11],&t[12],&t[13],&t[14],&t[15],&t[16]);
+
+	if(ret != 17) {
+		return -EINVAL;
+	} else {
+		int invalid_offset = 0;
+
+		for (i = 0; i < 17; i++) {
+			if (t[i] > CPU_UV_MV_MAX) 
+				t[i] = CPU_UV_MV_MAX;
+			else if (t[i] < CPU_UV_MV_MIN) 
+				t[i] = CPU_UV_MV_MIN;
+
+			while(exynos_info->freq_table[i+invalid_offset].frequency==CPUFREQ_ENTRY_INVALID)
+				++invalid_offset;
+
+			exynos_info->volt_table[i+invalid_offset] = t[i];
+		}
+	}
+	return count;
+}		
+
+ssize_t store_UV_mV_table(struct cpufreq_policy *policy, 
+				 const char *buf, size_t count) {
+
+	unsigned int ret = -EINVAL;
+	int i = 0;
+	int t[17];
+
+	ret = sscanf(buf, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
+		     &t[0],&t[1],&t[2],&t[3],&t[4],&t[5],&t[6],&t[7],&t[8],&t[9],&t[10],
+		     &t[11],&t[12],&t[13],&t[14],&t[15],&t[16]);
+
+	if(ret != 17) {
+		return -EINVAL;
+	} else {
+		int invalid_offset = 0;
+
+		for (i = 0; i < 17; i++) {
+			int rest = 0;
+
+			t[i] *= 1000;
+
+			if((rest = t[i] % 12500) != 0){
+				if(rest > 6250)
+					t[i] += rest;
+				else
+					t[i] -= rest;
+			}
+
+			if (t[i] > CPU_UV_MV_MAX) 
+				t[i] = CPU_UV_MV_MAX;
+			else if (t[i] < CPU_UV_MV_MIN) 
+				t[i] = CPU_UV_MV_MIN;
+
+			while(exynos_info->freq_table[i+invalid_offset].frequency==CPUFREQ_ENTRY_INVALID)
+				++invalid_offset;
+
+			exynos_info->volt_table[i+invalid_offset] = t[i];
+		}
+	}
+	return count;
+}
+#else
+ssize_t store_UV_uV_table(struct cpufreq_policy *policy, 
+				 const char *buf, size_t count) {
+
+	unsigned int ret = -EINVAL;
+	int i = 0;
+	int t[16];
+
+	ret = sscanf(buf, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
+		     &t[0],&t[1],&t[2],&t[3],&t[4],&t[5],&t[6],&t[7],&t[8],&t[9],&t[10],
+		     &t[11],&t[12],&t[13],&t[14],&t[15]);
+
+	if(ret != 16) {
+		return -EINVAL;
+	} else {
+		int invalid_offset = 0;
+
+		for (i = 0; i < 16; i++) {
+			if (t[i] > CPU_UV_MV_MAX) 
+				t[i] = CPU_UV_MV_MAX;
+			else if (t[i] < CPU_UV_MV_MIN) 
+				t[i] = CPU_UV_MV_MIN;
+
+			while(exynos_info->freq_table[i+invalid_offset].frequency==CPUFREQ_ENTRY_INVALID)
+				++invalid_offset;
+
+			exynos_info->volt_table[i+invalid_offset] = t[i];
+		}
+	}
+	return count;
+}		
+
+ssize_t store_UV_mV_table(struct cpufreq_policy *policy, 
+				 const char *buf, size_t count) {
+
+	unsigned int ret = -EINVAL;
+	int i = 0;
+	int t[16];
+
+	ret = sscanf(buf, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
+		     &t[0],&t[1],&t[2],&t[3],&t[4],&t[5],&t[6],&t[7],&t[8],&t[9],&t[10],
+		     &t[11],&t[12],&t[13],&t[14],&t[15]);
+
+	if(ret != 16) {
+		return -EINVAL;
+	} else {
+		int invalid_offset = 0;
+
+		for (i = 0; i < 16; i++) {
+			int rest = 0;
+
+			t[i] *= 1000;
+
+			if((rest = t[i] % 12500) != 0){
+				if(rest > 6250)
+					t[i] += rest;
+				else
+					t[i] -= rest;
+			}
+
+			if (t[i] > CPU_UV_MV_MAX) 
+				t[i] = CPU_UV_MV_MAX;
+			else if (t[i] < CPU_UV_MV_MIN) 
+				t[i] = CPU_UV_MV_MIN;
+
+			while(exynos_info->freq_table[i+invalid_offset].frequency==CPUFREQ_ENTRY_INVALID)
+				++invalid_offset;
+
+			exynos_info->volt_table[i+invalid_offset] = t[i];
+		}
+	}
+	return count;
+}
+#endif
+
