@@ -23,6 +23,11 @@
 #include <asm/div64.h>
 
 #define CPUFREQ_NAME_LEN 16
+
+#if defined(CONFIG_CPU_EXYNOS4212) || defined(CONFIG_CPU_EXYNOS4412)
+#define CPUFREQ_LEVEL_END		(L16 + 1)
+#endif
+
 //for voltage control interface
 #define CPU_UV_MV_MAX 1500000
 #define CPU_UV_MV_MIN 600000
