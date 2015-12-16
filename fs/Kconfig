@@ -278,10 +278,6 @@ config DYNAMIC_FSYNC
 	bool "dynamic file sync control"
 	default n
 	help
-<<<<<<< HEAD
-	An experimental file sync control using Android's early suspend / late resume drivers
-=======
-	  An experimental file sync control using Android's early suspend / late resume drivers
->>>>>>> c1e362e... fs/dyn_sync_cntrl: dynamic sync control
+          An experimental file sync control using Android's early suspend / late resume drivers
 
 endmenu
