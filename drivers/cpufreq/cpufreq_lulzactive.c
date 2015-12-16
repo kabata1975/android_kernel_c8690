@@ -105,14 +105,14 @@ static unsigned long dec_cpu_load;
  * Increasing frequency table index
  * zero disables and causes to always jump straight to max frequency.
  */
-#define DEFAULT_RAMP_UP_STEP 2
+#define DEFAULT_RAMP_UP_STEP 1
 static unsigned long ramp_up_step;
 
 /*
  * Decreasing frequency table index
  * zero disables and will calculate frequency according to load heuristic.
  */
-#define DEFAULT_RAMP_DOWN_STEP 0
+#define DEFAULT_RAMP_DOWN_STEP 1
 static unsigned long ramp_down_step;
 
 /*
