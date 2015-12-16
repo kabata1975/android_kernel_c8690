@@ -643,27 +643,27 @@ static ssize_t __FUNC(struct elevator_queue *e,				\
 	return ret;							\
 }
 STORE_FUNCTION(row_hp_read_quantum_store,
- &rowd->row_queues[ROWQ_PRIO_HIGH_READ].disp_quantum, 1, INT_MAX, 0);
- STORE_FUNCTION(row_rp_read_quantum_store,
- 			&rowd->row_queues[ROWQ_PRIO_REG_READ].disp_quantum,
- 			1, INT_MAX, 0);
- STORE_FUNCTION(row_hp_swrite_quantum_store,
- 			&rowd->row_queues[ROWQ_PRIO_HIGH_SWRITE].disp_quantum,
- 			1, INT_MAX, 0);
- STORE_FUNCTION(row_rp_swrite_quantum_store,
- 			&rowd->row_queues[ROWQ_PRIO_REG_SWRITE].disp_quantum,
- 			1, INT_MAX, 0);
- STORE_FUNCTION(row_rp_write_quantum_store,
- 			&rowd->row_queues[ROWQ_PRIO_REG_WRITE].disp_quantum,
- 			1, INT_MAX, 0);
- STORE_FUNCTION(row_lp_read_quantum_store,
- 			&rowd->row_queues[ROWQ_PRIO_LOW_READ].disp_quantum,
- 			1, INT_MAX, 0);
- STORE_FUNCTION(row_lp_swrite_quantum_store,
- 			&rowd->row_queues[ROWQ_PRIO_LOW_SWRITE].disp_quantum,
- 			1, INT_MAX, 1);
- STORE_FUNCTION(row_read_idle_store, &rowd->read_idle.idle_time, 1, INT_MAX, 1);
- STORE_FUNCTION(row_read_idle_freq_store, &rowd->read_idle.freq, 1, INT_MAX, 1);
+ &rowd->row_queues[ROWQ_PRIO_HIGH_READ].disp_quantum, 1, INT_MAX, 0, 0);
+STORE_FUNCTION(row_rp_read_quantum_store,
+			&rowd->row_queues[ROWQ_PRIO_REG_READ].disp_quantum,
+			1, INT_MAX, 0, 1);
+STORE_FUNCTION(row_hp_swrite_quantum_store,
+			&rowd->row_queues[ROWQ_PRIO_HIGH_SWRITE].disp_quantum,
+			1, INT_MAX, 0, 2);
+STORE_FUNCTION(row_rp_swrite_quantum_store,
+			&rowd->row_queues[ROWQ_PRIO_REG_SWRITE].disp_quantum,
+			1, INT_MAX, 0, 3);
+STORE_FUNCTION(row_rp_write_quantum_store,
+			&rowd->row_queues[ROWQ_PRIO_REG_WRITE].disp_quantum,
+			1, INT_MAX, 0, 4);
+STORE_FUNCTION(row_lp_read_quantum_store,
+			&rowd->row_queues[ROWQ_PRIO_LOW_READ].disp_quantum,
+			1, INT_MAX, 0, 5);
+STORE_FUNCTION(row_lp_swrite_quantum_store,
+			&rowd->row_queues[ROWQ_PRIO_LOW_SWRITE].disp_quantum,
+			1, INT_MAX, 0, 6);
+STORE_FUNCTION(row_read_idle_store, &rowd->read_idle.idle_time, 1, INT_MAX, 0, 7);
+STORE_FUNCTION(row_read_idle_freq_store, &rowd->read_idle.freq, 1, INT_MAX, 0, 8);
 
 #undef STORE_FUNCTION
 
