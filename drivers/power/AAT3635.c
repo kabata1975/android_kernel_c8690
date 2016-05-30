@@ -303,7 +303,7 @@ static int aat3635_power_get_usb_property(struct power_supply *bat_ps,
 	switch (psp) {
 	case POWER_SUPPLY_PROP_ONLINE:
 		if(charger==CHARGER_USB)
-			val->intval = 1;//(charger==CHARGER_USB);
+			val->intval = 2;//(charger==CHARGER_USB);
 		else
 			val->intval = 0;
 		//printk("aat3635_power_get_usb_property--%d\n",val->intval);
@@ -324,7 +324,7 @@ static int aat3635_power_get_ac_property(struct power_supply *bat_ps,
 	switch (psp) {
 	case POWER_SUPPLY_PROP_ONLINE:
 		if(charger==CHARGER_AC)
-			val->intval = 1;
+			val->intval = 2;
 		else
 			val->intval = 0;
 		//printk("aat3635_power_get_ac_property--%d\n",val->intval);
