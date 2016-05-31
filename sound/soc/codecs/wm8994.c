@@ -40,9 +40,7 @@
 #include "wm8994.h"
 #include "wm_hubs.h"
 
-#include "boeffla_sound.h"
-
-
+<<<<<<< HEAD
 #include <linux/gpio.h>
 #include <plat/gpio-cfg.h>
 
@@ -79,6 +77,15 @@ static int pre_user_value = 0;
 //EXPORT_SYMBOL_GPL(real_incall_flag);
 bool wm8994_suspend_flag = false;
 EXPORT_SYMBOL_GPL(wm8994_suspend_flag);
+=======
+#include "boeffla_sound.h"
+
+
+#define WM1811_JACKDET_MODE_NONE  0x0000
+#define WM1811_JACKDET_MODE_JACK  0x0100
+#define WM1811_JACKDET_MODE_MIC   0x0080
+#define WM1811_JACKDET_MODE_AUDIO 0x0180
+>>>>>>> 633f991... Boeffla-Sound: Engine
 
 #define WM8994_NUM_DRC 3
 #define WM8994_NUM_EQ  3
