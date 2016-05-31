@@ -173,10 +173,6 @@ int wm8994_volatile(struct snd_soc_codec *codec, unsigned int reg)
 #include "wm8994_voodoo.h"
 #endif
 
-#ifdef CONFIG_SND_BOEFFLA
-#include "boeffla_sound.h"
-#endif
-
 #ifdef CONFIG_SND_WOLFSON_SOUND_CONTROL
 #include "wolfson_sound.h"
 #endif
@@ -189,10 +185,6 @@ static int wm8994_write(struct snd_soc_codec *codec, unsigned int reg,
 
 #ifdef CONFIG_SND_VOODOO
 	value = voodoo_hook_wm8994_write(codec, reg, value);
-#endif
-
-#ifdef CONFIG_SND_BOEFFLA
-	value = Boeffla_sound_hook_wm8994_write(reg, value);
 #endif
 
 #ifdef CONFIG_SND_WOLFSON_SOUND_CONTROL
@@ -4013,10 +4005,6 @@ static int wm8994_codec_probe(struct snd_soc_codec *codec)
 	}
 #ifdef CONFIG_SND_VOODOO
 	voodoo_hook_wm8994_pcm_probe(codec);
-#endif
-
-#ifdef CONFIG_SND_BOEFFLA
-	Boeffla_sound_hook_wm8994_pcm_probe(codec);
 #endif
 
 #ifdef CONFIG_SND_WOLFSON_SOUND_CONTROL
