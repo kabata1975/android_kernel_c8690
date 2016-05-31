@@ -40,7 +40,6 @@
 #include "wm8994.h"
 #include "wm_hubs.h"
 
-<<<<<<< HEAD
 #include <linux/gpio.h>
 #include <plat/gpio-cfg.h>
 
@@ -77,15 +76,6 @@ static int pre_user_value = 0;
 //EXPORT_SYMBOL_GPL(real_incall_flag);
 bool wm8994_suspend_flag = false;
 EXPORT_SYMBOL_GPL(wm8994_suspend_flag);
-=======
-#include "boeffla_sound.h"
-
-
-#define WM1811_JACKDET_MODE_NONE  0x0000
-#define WM1811_JACKDET_MODE_JACK  0x0100
-#define WM1811_JACKDET_MODE_MIC   0x0080
-#define WM1811_JACKDET_MODE_AUDIO 0x0180
->>>>>>> 633f991... Boeffla-Sound: Engine
 
 #define WM8994_NUM_DRC 3
 #define WM8994_NUM_EQ  3
@@ -200,8 +190,6 @@ static int wm8994_write(struct snd_soc_codec *codec, unsigned int reg,
 #ifdef CONFIG_SND_WOLFSON_SOUND_CONTROL
 	value = Wolfson_sound_hook_wm8994_write(reg, value);
 #endif
-
-	value = Boeffla_sound_hook_wm8994_write(reg, value);
 
 	if (!wm8994_volatile(codec, reg)) {
 		ret = snd_soc_cache_write(codec, reg, value);
@@ -4022,8 +4010,6 @@ static int wm8994_codec_probe(struct snd_soc_codec *codec)
 #ifdef CONFIG_SND_WOLFSON_SOUND_CONTROL
 	Wolfson_sound_hook_wm8994_pcm_probe(codec);
 #endif
-
-	Boeffla_sound_hook_wm8994_pcm_probe(codec);
 
 	return 0;
 
